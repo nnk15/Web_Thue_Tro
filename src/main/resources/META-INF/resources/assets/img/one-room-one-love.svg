@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1275 771" role="img" aria-labelledby="title desc">
+  <title id="title">One Room One Love</title>
+  <desc id="desc">Logo ngoi nha mau trang voi dong chu One Room One Love</desc>
+  <rect width="1275" height="771" fill="#000"/>
+  <g fill="none" stroke="#fff" stroke-width="58" stroke-linejoin="miter" stroke-linecap="square">
+    <path d="M336 389V205L638 28l302 177v184"/>
+  </g>
+  <g>
+    <rect x="500" y="155" width="92" height="230" fill="#fff"/>
+    <rect x="623" y="155" width="92" height="230" fill="#fff"/>
+    <rect x="500" y="155" width="92" height="54" fill="#fff"/>
+    <rect x="623" y="155" width="92" height="54" fill="#fff"/>
+    <rect x="592" y="155" width="31" height="234" fill="#c9d2df"/>
+    <rect x="715" y="155" width="31" height="234" fill="#c9d2df"/>
+    <rect x="531" y="209" width="61" height="180" fill="#fff"/>
+    <rect x="654" y="209" width="61" height="180" fill="#fff"/>
+  </g>
+  <text x="637.5" y="643" fill="#fff" text-anchor="middle"
+        font-family="Montserrat, Arial, Helvetica, sans-serif"
+        font-size="88" font-weight="900" letter-spacing="1">
+    One Room. One Love
+  </text>
+</svg>

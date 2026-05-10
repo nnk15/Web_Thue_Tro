@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard quản trị viên | NhaTro Finder</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<main class="dashboard-shell">
+    <aside class="sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a class="active" href="#statistics">Thống kê</a>
+            <a href="#users">Người dùng</a>
+            <a href="#landlords">Chủ trọ</a>
+            <a href="#pending-rooms">Kiểm duyệt tin</a>
+            <a href="#reports">Báo cáo vi phạm</a>
+            <a href="profile.html">Tài khoản</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <div class="dashboard-top">
+            <div>
+                <h1>Dashboard quản trị viên</h1>
+                <p>Quản lý người dùng, chủ trọ, kiểm duyệt tin đăng và theo dõi thống kê hệ thống.</p>
+            </div>
+            <a class="btn btn-outline" href="index.html">Về trang chủ</a>
+        </div>
+
+        <div class="stats-grid" id="statistics">
+            <div class="metric"><span>Người dùng</span><strong>1.248</strong></div>
+            <div class="metric"><span>Chủ trọ</span><strong>312</strong></div>
+            <div class="metric"><span>Phòng đang đăng</span><strong>2.480</strong></div>
+            <div class="metric"><span>Tin chờ duyệt</span><strong>36</strong></div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="detail-panel">
+                <section class="data-panel" id="users">
+                    <div class="panel-head">
+                        <h2>Quản lý người dùng</h2>
+                        <form class="search-box">
+                            <input type="search" name="keyword" placeholder="Tìm tên, email, số điện thoại">
+                            <button class="btn btn-primary" type="submit">Tìm</button>
+                        </form>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Họ tên</th><th>Email</th><th>Số điện thoại</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                            <tbody>
+                            <tr><td>Nguyễn Hoàng Linh</td><td>linh@example.com</td><td>0901234567</td><td>USER</td><td><span class="badge badge-approved">ACTIVE</span></td><td><button class="btn btn-outline">Khóa</button></td></tr>
+                            <tr><td>Trần Minh Anh</td><td>anh@example.com</td><td>0912345678</td><td>LANDLORD</td><td><span class="badge badge-approved">ACTIVE</span></td><td><button class="btn btn-outline">Khóa</button></td></tr>
+                            <tr><td>Lê Gia Bảo</td><td>bao@example.com</td><td>0987654321</td><td>USER</td><td><span class="badge badge-rented">LOCKED</span></td><td><button class="btn btn-primary">Mở khóa</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="data-panel" id="landlords">
+                    <div class="panel-head"><h2>Quản lý người cho thuê</h2></div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Chủ trọ</th><th>Số phòng</th><th>Tin chờ duyệt</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                            <tbody>
+                            <tr><td>Trần Minh Anh</td><td>18</td><td>3</td><td><span class="badge badge-approved">ACTIVE</span></td><td><button class="btn btn-outline">Xem</button></td></tr>
+                            <tr><td>Đặng Quốc Việt</td><td>7</td><td>1</td><td><span class="badge badge-approved">ACTIVE</span></td><td><button class="btn btn-outline">Xem</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="data-panel" id="pending-rooms">
+                    <div class="panel-head"><h2>Kiểm duyệt tin đăng</h2></div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Tin đăng</th><th>Chủ trọ</th><th>Giá</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                            <tbody>
+                            <tr><td>Phòng mới Cầu Giấy</td><td>Trần Minh Anh</td><td>4.800.000đ</td><td><span class="badge badge-pending">Chờ duyệt</span></td><td><button class="btn btn-primary">Duyệt</button></td></tr>
+                            <tr><td>Căn hộ mini Đống Đa</td><td>Đặng Quốc Việt</td><td>5.500.000đ</td><td><span class="badge badge-pending">Chờ duyệt</span></td><td><button class="btn btn-outline">Từ chối</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="detail-panel">
+                <section class="data-panel" id="reports">
+                    <div class="panel-head"><h2>Báo cáo vi phạm</h2></div>
+                    <div class="compact-list">
+                        <div class="list-item">
+                            <div><h3>Ảnh phòng không đúng thực tế</h3><p>Phòng Cầu Giấy, báo cáo bởi Nguyễn Hoàng Linh.</p></div>
+                            <span class="badge badge-pending">Chờ xử lý</span>
+                        </div>
+                        <div class="list-item">
+                            <div><h3>Thông tin giá thuê sai</h3><p>Căn hộ mini Đống Đa, báo cáo bởi Lê Gia Bảo.</p></div>
+                            <span class="badge badge-approved">Đã xử lý</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="data-panel">
+                    <div class="panel-head"><h2>Thống kê toàn hệ thống</h2></div>
+                    <div class="compact-list">
+                        <div class="list-item"><div><h3>Yêu cầu thuê</h3><p>428 yêu cầu trong 30 ngày gần nhất</p></div><span class="badge badge-approved">+18%</span></div>
+                        <div class="list-item"><div><h3>Lịch xem phòng</h3><p>612 lịch hẹn trong 30 ngày gần nhất</p></div><span class="badge badge-approved">+24%</span></div>
+                        <div class="list-item"><div><h3>Tỉ lệ duyệt tin</h3><p>91% tin đăng đạt yêu cầu kiểm duyệt</p></div><span class="badge badge-muted">Ổn định</span></div>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/admin-dashboard.js"></script>
+</body>
+</html>

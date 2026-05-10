@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách phòng trọ | One Room One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="listing-page">
+<header class="listing-header">
+    <div class="listing-header-inner">
+        <a class="listing-brand" href="index.html">
+            <img src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+
+        <form class="listing-search-form" action="rooms.html">
+            <input type="search" name="keyword" placeholder="Tìm kiếm theo trường đại học, quận hoặc tên phòng">
+            <button type="submit" aria-label="Tìm kiếm">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+            </button>
+        </form>
+
+        <nav class="listing-header-actions" aria-label="Tiện ích">
+            <a class="listing-action-link" href="#listing-support">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0v4a3 3 0 0 1-3 3h-2"/><path d="M6 13v5"/><path d="M18 13v5"/></svg>
+                Ủng hộ
+                <svg class="listing-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </a>
+            <a class="listing-action-link" href="#">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c3 3 3 15 0 18"/><path d="M12 3c-3 3-3 15 0 18"/></svg>
+                VN
+            </a>
+            <a class="listing-login" href="login.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4v18h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+                Đăng nhập
+            </a>
+            <div class="home-account-group listing-account-group" hidden>
+                <a class="home-user-btn" href="profile.html" aria-label="Tài khoản">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                </a>
+                <a class="home-menu-btn" href="profile.html" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <form class="listing-filter-bar" action="rooms.html">
+        <button class="filter-chip icon-chip" type="button" aria-label="Loại phòng">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h12"/><path d="M4 12h8"/><path d="M4 17h5"/></svg>
+            Loại
+        </button>
+        <select class="filter-chip" name="location" aria-label="Địa phương">
+            <option value="">Địa phương</option>
+            <option>Cầu Giấy</option>
+            <option>Đống Đa</option>
+            <option>Hai Bà Trưng</option>
+            <option>Thanh Xuân</option>
+            <option>Tây Hồ</option>
+            <option>Nam Từ Liêm</option>
+            <option>Hà Đông</option>
+            <option>Hoàng Mai</option>
+            <option>Ba Đình</option>
+            <option>Long Biên</option>
+        </select>
+        <select class="filter-chip" name="maxPrice" aria-label="Ngân sách">
+            <option value="">Ngân sách</option>
+            <option value="3000000">Dưới 3 triệu</option>
+            <option value="5000000">Dưới 5 triệu</option>
+            <option value="7000000">Dưới 7 triệu</option>
+        </select>
+        <select class="filter-chip" name="minArea" aria-label="Diện tích">
+            <option value="">Diện tích</option>
+            <option value="20">Từ 20 m2</option>
+            <option value="30">Từ 30 m2</option>
+            <option value="40">Từ 40 m2</option>
+        </select>
+        <select class="filter-chip" name="status" aria-label="Trạng thái">
+            <option value="">Thời gian lưu trú</option>
+            <option value="AVAILABLE">Còn trống</option>
+            <option value="RENTED">Đã thuê</option>
+        </select>
+        <select class="filter-chip" name="furnitureType" aria-label="Nội thất">
+            <option value="">Loại phòng</option>
+            <option>Full nội thất</option>
+            <option>Cơ bản</option>
+            <option>Không nội thất</option>
+        </select>
+        <button class="filter-chip" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7z"/></svg>
+            Bộ lọc
+        </button>
+        <a class="clear-filter-link" href="rooms.html">Xóa tất cả</a>
+    </form>
+</header>
+
+<main class="listing-main">
+    <div class="listing-shell">
+        <section class="listing-results-column">
+            <nav class="listing-breadcrumb" aria-label="Đường dẫn">
+                <a href="index.html">Việt Nam</a>
+                <span>/</span>
+                <a href="rooms.html">Hà Nội</a>
+                <span>/</span>
+                <strong>Phòng trọ</strong>
+            </nav>
+
+            <div class="listing-results-head">
+                <div>
+                    <h1>Chỗ ở cho thuê tại <strong>Hà Nội</strong> <span>|</span> Hiển thị <strong id="listingRoomCount">0</strong> địa điểm</h1>
+                    <p id="roomResultsSummary">Đang tải danh sách phòng trọ tại Hà Nội...</p>
+                </div>
+                <div class="listing-view-toggle" aria-label="Chế độ xem">
+                    <button class="active" type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+                        Danh sách
+                    </button>
+                    <button type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4z"/><path d="M13 4h7v7h-7z"/><path d="M4 13h7v7H4z"/><path d="M13 13h7v7h-7z"/></svg>
+                        Lưới
+                    </button>
+                </div>
+            </div>
+
+            <div class="listing-results-list" id="roomsGrid">
+                <div class="empty-state">Đang tải dữ liệu phòng trọ từ hệ thống...</div>
+            </div>
+        </section>
+
+        <aside class="listing-map-sidebar" id="listing-support">
+            <div class="listing-map-card">
+                <iframe src="https://www.google.com/maps?q=H%C3%A0%20N%E1%BB%99i&output=embed" loading="lazy" title="Bản đồ phòng trọ Hà Nội"></iframe>
+                <a class="map-explore-btn" href="rooms.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18 3 20V6l6-2 6 2 6-2v14l-6 2-6-2Z"/><path d="M9 4v14"/><path d="M15 6v14"/></svg>
+                    Khám phá trên bản đồ
+                </a>
+            </div>
+
+            <div class="listing-support-card">
+                <details open>
+                    <summary>
+                        <span>Đặt phòng tức thì</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <p>Theo dõi yêu cầu thuê và lịch xem phòng trong trang tài khoản.</p>
+                </details>
+                <details>
+                    <summary>
+                        <span>Đảm bảo giá minh bạch</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <p>Giá thuê, tiền cọc và diện tích được hiển thị rõ trên từng tin.</p>
+                </details>
+                <details>
+                    <summary>
+                        <span>Phòng đã được kiểm duyệt</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <p>Admin kiểm duyệt tin trước khi phòng xuất hiện công khai.</p>
+                </details>
+                <details>
+                    <summary>
+                        <span>Hỗ trợ người thuê 24/7</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <p>Theo dõi yêu cầu thuê, lịch xem phòng và thông báo trong dashboard.</p>
+                </details>
+                <details>
+                    <summary>
+                        <span>Hơn 100 phòng tại Hà Nội</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <p>Dữ liệu mẫu hiện có 100 phòng từ 10 chủ trọ khác nhau.</p>
+                </details>
+            </div>
+        </aside>
+    </div>
+</main>
+
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/rooms.js"></script>
+</body>
+</html>

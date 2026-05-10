@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản của tôi | One Room One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="account-page">
+<header class="listing-header account-top-header">
+    <div class="listing-header-inner">
+        <a class="listing-brand" href="index.html">
+            <img src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+
+        <form class="listing-search-form" action="rooms.html">
+            <input type="search" name="keyword" placeholder="Search by Ha Noi area, university or room">
+            <button type="submit" aria-label="Tìm kiếm">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+            </button>
+        </form>
+
+        <nav class="listing-header-actions" aria-label="Tiện ích">
+            <a class="listing-action-link" href="#notifications">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0v4a3 3 0 0 1-3 3h-2"/><path d="M6 13v5"/><path d="M18 13v5"/></svg>
+                Support
+                <svg class="listing-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </a>
+            <a class="listing-action-link" href="#">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c3 3 3 15 0 18"/><path d="M12 3c-3 3-3 15 0 18"/></svg>
+                VN
+            </a>
+            <a class="listing-login" href="login.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4v18h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+                Đăng nhập
+            </a>
+            <div class="home-account-group listing-account-group" hidden>
+                <a class="home-user-btn" href="profile.html" aria-label="Tài khoản"></a>
+                <a class="home-menu-btn" href="profile.html" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                </a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main class="dashboard-shell account-shell">
+    <aside class="sidebar account-sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a class="active" href="#account-details">Thông tin chi tiết</a>
+            <a href="#favorites">Phòng yêu thích</a>
+            <a href="#requests">Yêu cầu thuê</a>
+            <a href="#appointments">Lịch xem phòng</a>
+            <a href="#notifications">Thông báo</a>
+            <a href="rooms.html">Tìm phòng</a>
+            <a href="login.html" data-auth-logout="true">Đăng xuất</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main account-main">
+        <div class="dashboard-top">
+            <div>
+                <h1>Tài khoản của tôi</h1>
+                <p>Quản lý thông tin cá nhân, phòng đã lưu, yêu cầu thuê và lịch xem phòng.</p>
+            </div>
+            <a class="btn btn-primary" href="rooms.html">Tìm phòng mới</a>
+        </div>
+
+        <section class="data-panel account-details-panel" id="account-details">
+            <div class="profile-identity">
+                <div class="profile-identity-avatar" aria-hidden="true">
+                    <svg viewBox="0 0 64 64">
+                        <circle cx="32" cy="24" r="13"/>
+                        <path d="M12 56c3.5-13 11-19 20-19s16.5 6 20 19"/>
+                    </svg>
+                </div>
+                <div class="profile-identity-text">
+                    <strong data-profile-name>loading</strong>
+                    <span data-profile-email>loading</span>
+                </div>
+            </div>
+
+            <div class="settings-title">
+                <h2>Thông tin chi tiết</h2>
+            </div>
+
+            <div class="settings-card account-settings-card">
+                <a class="settings-row" href="#account-details">
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Full name</strong>
+                        <span data-profile-name>loading</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+
+                <a class="settings-row" href="#account-details" data-profile-email-link>
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Email</strong>
+                        <span data-profile-email>loading</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+
+                <a class="settings-row" href="#account-details" data-profile-phone-link>
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6.1 6.1l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Phone Number</strong>
+                        <span data-profile-phone>Not set</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+
+                <a class="settings-row" href="#password-modal">
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 8-8"/><path d="m15 8 2 2 3-3-2-2"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Password</strong>
+                        <span>********</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+        </section>
+
+        <div class="stats-grid">
+            <div class="metric"><span>Phòng yêu thích</span><strong>0</strong></div>
+            <div class="metric"><span>Yêu cầu chờ</span><strong>0</strong></div>
+            <div class="metric"><span>Lịch sắp xem</span><strong>0</strong></div>
+            <div class="metric"><span>Thông báo mới</span><strong>0</strong></div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="detail-panel">
+                <section class="data-panel" id="favorites">
+                    <div class="panel-head">
+                        <h2>Phòng yêu thích</h2>
+                        <button class="btn btn-outline" type="button" data-show-all-favorites hidden>Xem thêm</button>
+                    </div>
+                    <div class="room-grid">
+                        <div class="empty-state">Đang tải phòng yêu thích...</div>
+                    </div>
+                </section>
+
+                <section class="data-panel" id="requests">
+                    <div class="panel-head">
+                        <h2>Yêu cầu thuê phòng</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Phòng</th>
+                                <th>Thời gian thuê</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td class="muted-cell" colspan="4">Đang tải yêu cầu thuê...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="data-panel" id="appointments">
+                    <div class="panel-head">
+                        <h2>Lịch xem phòng</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Phòng</th>
+                                <th>Thời gian xem</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td class="muted-cell" colspan="4">Đang tải lịch xem phòng...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="detail-panel">
+                <section class="data-panel" id="notifications">
+                    <div class="panel-head">
+                        <h2>Thông báo</h2>
+                    </div>
+                    <div class="compact-list">
+                        <div class="empty-state">Đang tải thông báo...</div>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </section>
+</main>
+
+<section class="modal" id="password-modal" aria-labelledby="password-modal-title">
+    <div class="modal-card password-modal-card">
+        <div class="modal-head">
+            <h2 id="password-modal-title">Đổi mật khẩu</h2>
+            <a class="modal-close" href="#account-details" aria-label="Đóng">&times;</a>
+        </div>
+        <form class="form-grid password-modal-form" id="password-form">
+            <div class="form-field">
+                <label for="oldPassword">Mật khẩu hiện tại</label>
+                <input id="oldPassword" name="oldPassword" type="password" autocomplete="current-password">
+            </div>
+            <div class="form-field">
+                <label for="newPassword">Mật khẩu mới</label>
+                <input id="newPassword" name="newPassword" type="password" autocomplete="new-password">
+            </div>
+            <div class="modal-actions">
+                <a class="btn btn-outline" href="#account-details">Hủy</a>
+                <button class="btn btn-primary" type="submit">Đổi mật khẩu</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/tenant-dashboard.js"></script>
+</body>
+</html>

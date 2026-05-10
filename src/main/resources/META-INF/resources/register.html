@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký | NhaTro Finder</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<main class="auth-page">
+    <section class="auth-visual">
+        <h1>Bắt đầu tìm phòng hoặc đăng tin cho thuê chỉ trong vài phút</h1>
+    </section>
+    <section class="auth-panel">
+        <div class="auth-card">
+            <a class="logo" href="index.html">
+                <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+            </a>
+            <h1>Đăng ký</h1>
+            <p>Chọn vai trò phù hợp để hệ thống mở đúng dashboard sau khi đăng nhập.</p>
+            <form class="form-grid">
+                <div class="form-field full">
+                    <label for="fullName">Họ tên</label>
+                    <input id="fullName" name="fullName" type="text" placeholder="Nguyễn Văn A" required>
+                </div>
+                <div class="form-field full">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="form-field full">
+                    <label for="phone">Số điện thoại</label>
+                    <input id="phone" name="phone" type="tel" placeholder="0901234567" required>
+                </div>
+                <div class="form-field">
+                    <label for="password">Mật khẩu</label>
+                    <input id="password" name="password" type="password" placeholder="Tối thiểu 6 ký tự" required>
+                </div>
+                <div class="form-field">
+                    <label for="confirmPassword">Xác nhận mật khẩu</label>
+                    <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Nhập lại mật khẩu" required>
+                </div>
+                <div class="form-field full">
+                    <label for="role">Vai trò</label>
+                    <select id="role" name="role" required>
+                        <option value="USER">Người thuê</option>
+                        <option value="LANDLORD">Người cho thuê</option>
+                    </select>
+                </div>
+                <div class="form-field full">
+                    <button class="btn btn-primary" type="submit">Đăng ký</button>
+                </div>
+            </form>
+            <div class="auth-links">
+                <span>Đã có tài khoản?</span>
+                <a href="login.html">Chuyển sang đăng nhập</a>
+            </div>
+        </div>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản chủ trọ | One Room. One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="landlord-profile-page">
+<main class="dashboard-shell landlord-shell">
+    <aside class="sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a href="landlord-dashboard.html#rooms">Quản lý phòng</a>
+            <a href="landlord-dashboard.html#create-room">Đăng tin mới</a>
+            <a href="landlord-requests.html">Yêu cầu thuê</a>
+            <a href="landlord-appointments.html">Lịch xem</a>
+            <a href="landlord-notifications.html">Thông báo</a>
+            <a class="active" href="landlord-profile.html">Tài khoản</a>
+            <a href="login.html" data-auth-logout="true">Đăng xuất</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <div class="dashboard-top">
+            <div>
+                <h1>Tài khoản chủ trọ</h1>
+                <p>Thông tin đăng nhập và bảo mật tài khoản.</p>
+            </div>
+            <a class="btn btn-outline" href="landlord-dashboard.html">Quay lại quản lý phòng</a>
+        </div>
+
+        <section class="data-panel landlord-profile-panel" id="account-details">
+            <div class="profile-identity">
+                <div class="profile-identity-avatar" aria-hidden="true">
+                    <svg viewBox="0 0 64 64">
+                        <circle cx="32" cy="24" r="13"/>
+                        <path d="M12 56c3.5-13 11-19 20-19s16.5 6 20 19"/>
+                    </svg>
+                </div>
+                <div class="profile-identity-text">
+                    <strong data-profile-name>Đang tải</strong>
+                    <span data-profile-email>Đang tải</span>
+                </div>
+            </div>
+
+            <div class="settings-title">
+                <h2>Thông tin chi tiết</h2>
+            </div>
+
+            <div class="settings-card account-settings-card">
+                <a class="settings-row" href="#account-details">
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Full name</strong>
+                        <span data-profile-name>Đang tải</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+
+                <a class="settings-row" href="#account-details" data-profile-email-link>
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Email</strong>
+                        <span data-profile-email>Đang tải</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+
+                <a class="settings-row" href="#account-details" data-profile-phone-link>
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6.1 6.1l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Phone Number</strong>
+                        <span data-profile-phone>Chưa cập nhật</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+
+                <a class="settings-row" href="#password-modal">
+                    <span class="settings-row-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 8-8"/><path d="m15 8 2 2 3-3-2-2"/></svg>
+                    </span>
+                    <span class="settings-row-content">
+                        <strong>Password</strong>
+                        <span>********</span>
+                    </span>
+                    <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+        </section>
+    </section>
+</main>
+
+<section class="modal" id="password-modal" aria-labelledby="password-modal-title">
+    <div class="modal-card password-modal-card">
+        <div class="modal-head">
+            <h2 id="password-modal-title">Đổi mật khẩu</h2>
+            <a class="modal-close" href="#account-details" aria-label="Đóng">&times;</a>
+        </div>
+        <form class="form-grid password-modal-form" id="password-form" data-password-form>
+            <div class="form-field">
+                <label for="oldPassword">Mật khẩu hiện tại</label>
+                <input id="oldPassword" name="oldPassword" type="password" autocomplete="current-password" required>
+            </div>
+            <div class="form-field">
+                <label for="newPassword">Mật khẩu mới</label>
+                <input id="newPassword" name="newPassword" type="password" autocomplete="new-password" required>
+            </div>
+            <div class="modal-actions">
+                <a class="btn btn-outline" href="#account-details">Hủy</a>
+                <button class="btn btn-primary" type="submit">Đổi mật khẩu</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/landlord-profile.js"></script>
+</body>
+</html>

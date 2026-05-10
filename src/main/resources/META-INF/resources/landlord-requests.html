@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yêu cầu thuê | One Room. One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<main class="dashboard-shell landlord-shell">
+    <aside class="sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a href="landlord-dashboard.html#rooms">Quản lý phòng</a>
+            <a href="landlord-dashboard.html#create-room">Đăng tin mới</a>
+            <a class="active" href="landlord-requests.html">Yêu cầu thuê</a>
+            <a href="landlord-appointments.html">Lịch xem</a>
+            <a href="landlord-notifications.html">Thông báo</a>
+            <a href="landlord-profile.html">Tài khoản</a>
+            <a href="login.html" data-auth-logout="true">Đăng xuất</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <div class="dashboard-top">
+            <div>
+                <h1>Yêu cầu thuê phòng</h1>
+                <p>Xem và xử lý các yêu cầu thuê do người thuê gửi tới phòng của bạn.</p>
+            </div>
+            <a class="btn btn-outline" href="landlord-dashboard.html">Quay lại quản lý phòng</a>
+        </div>
+
+        <section class="data-panel" id="rental-requests">
+            <div class="panel-head">
+                <h2>Danh sách yêu cầu thuê</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Người thuê</th>
+                        <th>Phòng</th>
+                        <th>Liên hệ</th>
+                        <th>Thời gian muốn thuê</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td class="muted-cell" colspan="6">Đang tải yêu cầu thuê...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/landlord-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | NhaTro Finder</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<main class="auth-page">
+    <section class="auth-visual">
+        <h1>Quản lý hành trình thuê phòng trong một tài khoản duy nhất</h1>
+    </section>
+    <section class="auth-panel">
+        <div class="auth-card">
+            <a class="logo" href="index.html">
+                <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+            </a>
+            <h1>Đăng nhập</h1>
+            <p>Truy cập dashboard người thuê, chủ trọ hoặc quản trị viên.</p>
+            <form class="form-grid">
+                <div class="form-field full">
+                    <label for="login">Email hoặc số điện thoại</label>
+                    <input id="login" name="login" type="text" placeholder="email@example.com hoặc 090..." required>
+                </div>
+                <div class="form-field full">
+                    <label for="password">Mật khẩu</label>
+                    <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" required>
+                </div>
+                <div class="form-field full">
+                    <button class="btn btn-primary" type="submit">Đăng nhập</button>
+                </div>
+            </form>
+            <div class="auth-links">
+                <a href="#">Quên mật khẩu?</a>
+                <a href="register.html">Tạo tài khoản mới</a>
+            </div>
+        </div>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+</body>
+</html>

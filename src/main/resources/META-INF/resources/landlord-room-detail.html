@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết phòng | One Room. One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<main class="dashboard-shell landlord-shell">
+    <aside class="sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a class="active" href="landlord-dashboard.html#rooms">Quản lý phòng</a>
+            <a href="landlord-dashboard.html#create-room">Đăng tin mới</a>
+            <a href="landlord-requests.html">Yêu cầu thuê</a>
+            <a href="landlord-appointments.html">Lịch xem</a>
+            <a href="landlord-notifications.html">Thông báo</a>
+            <a href="landlord-profile.html">Tài khoản</a>
+            <a href="login.html" data-auth-logout="true">Đăng xuất</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main" data-landlord-room-detail>
+        <div class="empty-state">Đang tải chi tiết phòng...</div>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/landlord-room-detail.js"></script>
+</body>
+</html>
