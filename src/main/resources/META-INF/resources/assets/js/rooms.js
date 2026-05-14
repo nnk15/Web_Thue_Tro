@@ -1,4 +1,6 @@
 (() => {
+    const RECENT_SEARCHES_KEY = "nhatro.recentSearches";
+    const MAX_RECENT_SEARCHES = 6;
     const grid = document.querySelector("#roomsGrid");
     const summary = document.querySelector("#roomResultsSummary");
     const countNode = document.querySelector("#listingRoomCount");
@@ -57,6 +59,7 @@
             form?.addEventListener("submit", (event) => {
                 event.preventDefault();
                 const next = collectFormParams(form);
+                rememberSearchFromParams(next);
                 const query = next.toString();
                 window.history.pushState({}, "", query ? `${window.location.pathname}?${query}` : window.location.pathname);
                 syncParams(next);
@@ -70,6 +73,70 @@
             setFormValues();
             loadRooms();
         });
+    }
+
+    function rememberSearchFromParams(nextParams) {
+        const location = normalizeSearchValue(nextParams.get("location"));
+        const keyword = normalizeSearchValue(nextParams.get("keyword"));
+        if (location) {
+            rememberSearch(location, "location");
+            return;
+        }
+        if (keyword) {
+            rememberSearch(keyword, "keyword");
+        }
+    }
+
+    function rememberSearch(value, type = "keyword") {
+        const searchValue = normalizeSearchValue(value);
+        if (!searchValue) {
+            return;
+        }
+
+        const searchType = type === "location" ? "location" : "keyword";
+        const current = readRecentSearches().filter((item) => (
+            item.type !== searchType || searchKey(item.value) !== searchKey(searchValue)
+        ));
+        const next = [{ value: searchValue, type: searchType }, ...current].slice(0, MAX_RECENT_SEARCHES);
+
+        try {
+            localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+        } catch {
+            // Ignore storage failures so searching still works.
+        }
+    }
+
+    function readRecentSearches() {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || "[]");
+            if (!Array.isArray(parsed)) {
+                return [];
+            }
+
+            return parsed
+                    .map((item) => {
+                        if (typeof item === "string") {
+                            return { value: normalizeSearchValue(item), type: "keyword" };
+                        }
+
+                        return {
+                            value: normalizeSearchValue(item?.value),
+                            type: item?.type === "location" ? "location" : "keyword"
+                        };
+                    })
+                    .filter((item) => item.value)
+                    .slice(0, MAX_RECENT_SEARCHES);
+        } catch {
+            return [];
+        }
+    }
+
+    function normalizeSearchValue(value) {
+        return String(value || "").trim().replace(/\s+/g, " ");
+    }
+
+    function searchKey(value) {
+        return normalizeSearchValue(value).toLocaleLowerCase("vi-VN");
     }
 
     function bindFavoriteButtons() {

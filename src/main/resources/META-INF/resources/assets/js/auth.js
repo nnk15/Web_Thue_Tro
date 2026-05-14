@@ -4,6 +4,13 @@
     const LEGACY_TOKEN_KEY = "token";
 
     const page = window.location.pathname.split("/").pop() || "index.html";
+    const USER_PROFILE_PAGES = new Set([
+        "profile.html",
+        "profile-favorites.html",
+        "profile-requests.html",
+        "profile-rented-room.html",
+        "profile-notifications.html"
+    ]);
 
     function token() {
         return localStorage.getItem(TOKEN_KEY) || localStorage.getItem(LEGACY_TOKEN_KEY);
@@ -176,7 +183,7 @@
             }
         });
 
-        document.querySelectorAll('.side-nav a[href="#notifications"], .side-nav a[href*="notifications"]').forEach((link) => {
+        document.querySelectorAll('.side-nav a[href="#notifications"], .side-nav a[href*="notifications"], .account-menu-item[data-notification-link="true"]').forEach((link) => {
             link.classList.toggle("has-notifications", hasUnread);
             if (hasUnread) {
                 link.dataset.notificationCount = String(unreadCount);
@@ -211,48 +218,33 @@
             return;
         }
 
-        const dashboard = dashboardFor(user?.role);
-        const profileHref = user?.role === "LANDLORD" ? "landlord-profile.html" : "profile.html";
-        const shortlistHref = user?.role === "USER" ? "profile.html#favorites" : dashboard;
-        const listHref = user?.role === "LANDLORD" ? "landlord-dashboard.html#create-room" : "landlord-dashboard.html";
-        const bookingsText = user?.role === "ADMIN" ? "Admin Dashboard" : user?.role === "USER" ? "Quản lý thuê phòng" : "Bookings";
+        const isLandlord = user?.role === "LANDLORD";
+        const isAdmin = user?.role === "ADMIN";
+        const profileHref = isLandlord ? "landlord-profile.html" : "profile.html";
+        const manageHref = isLandlord ? "landlord-dashboard.html#rooms" : isAdmin ? "admin-dashboard.html" : "profile-requests.html";
+        const notificationsHref = isLandlord ? "landlord-notifications.html" : isAdmin ? "admin-dashboard.html" : "profile-notifications.html";
 
         menu.innerHTML = `
             <a class="account-menu-item" href="${profileHref}" data-profile-link="true">
                 ${menuIcon("user")}
-                <span>Profile</span>
+                <span>Thông tin cá nhân</span>
             </a>
-            <a class="account-menu-item is-active" href="${dashboard}">
+            <a class="account-menu-item is-active" href="${manageHref}">
                 ${menuIcon("calendar")}
-                <span>${bookingsText}</span>
+                <span>Quản lý thuê phòng</span>
             </a>
-            <a class="account-menu-item" href="${shortlistHref}">
-                ${menuIcon("heart")}
-                <span>Shortlist</span>
-                <strong class="account-count">2</strong>
+            <a class="account-menu-item" href="${notificationsHref}" data-notification-link="true">
+                ${menuIcon("bell")}
+                <span>Thông báo</span>
             </a>
-            <a class="account-menu-item" href="${dashboard}">
-                ${menuIcon("group")}
-                <span>Group Booking</span>
-                <strong class="account-pill">New</strong>
-            </a>
-            <a class="account-menu-item" href="register.html">
-                ${menuIcon("refer")}
-                <span>Refer a Friend</span>
-                <strong class="account-pill">Get 50 GBP</strong>
-            </a>
-            <a class="account-menu-item" href="landlord-dashboard.html">
-                ${menuIcon("partner")}
-                <span>Partner with Us</span>
-            </a>
-            <a class="account-menu-item" href="${listHref}">
-                ${menuIcon("list")}
-                <span>List with Us</span>
+            <a class="account-menu-item" href="rooms.html">
+                ${menuIcon("search")}
+                <span>Tìm phòng</span>
             </a>
             <div class="account-menu-separator"></div>
             <a class="account-menu-item" href="login.html" data-auth-logout="true">
                 ${menuIcon("logout")}
-                <span>Logout</span>
+                <span>Đăng xuất</span>
             </a>
         `;
     }
@@ -267,6 +259,8 @@
             refer: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M3 21a6 6 0 0 1 12 0"/><path d="M18 8v6M15 11h6"/></svg>`,
             partner: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 11 3 3 7-7"/><path d="M2 12c3-5 7-5 10 0 3 5 7 5 10 0"/></svg>`,
             list: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>`,
+            bell: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>`,
+            search: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>`,
             logout: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4v18h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>`
         };
         return icons[type] || icons.user;
@@ -280,7 +274,7 @@
             }
             event.preventDefault();
             clearSession();
-            window.location.href = "login.html";
+            window.location.href = "index.html";
         });
     }
 
@@ -335,6 +329,10 @@
     function protectPage() {
         const protectedPages = {
             "profile.html": ["USER", "LANDLORD", "ADMIN"],
+            "profile-favorites.html": ["USER"],
+            "profile-requests.html": ["USER"],
+            "profile-rented-room.html": ["USER"],
+            "profile-notifications.html": ["USER"],
             "tenant-dashboard.html": ["USER", "ADMIN"],
             "landlord-dashboard.html": ["LANDLORD", "ADMIN"],
             "landlord-profile.html": ["LANDLORD", "ADMIN"],
@@ -356,7 +354,7 @@
             return;
         }
 
-        if (page === "profile.html" && user.role === "LANDLORD") {
+        if (USER_PROFILE_PAGES.has(page) && user.role === "LANDLORD") {
             window.location.href = "landlord-profile.html";
             return;
         }

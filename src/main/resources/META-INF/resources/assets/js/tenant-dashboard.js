@@ -6,31 +6,42 @@
     const requestsBody = document.querySelector("#requests tbody");
     const appointmentsBody = document.querySelector("#appointments tbody");
     const notificationsList = document.querySelector("#notifications .compact-list");
+    const rentedRoomContainer = document.querySelector("[data-rented-room]");
     const FAVORITE_PREVIEW_LIMIT = 3;
+    const isFavoritesFullPage = Boolean(document.querySelector("[data-favorites-full]"));
     const currentUser = auth?.currentUser?.();
     let favoriteRooms = [];
-    let showAllFavorites = false;
+    let showAllFavorites = isFavoritesFullPage;
     let notificationReadObserver = null;
     let notificationAutoReadTimer = null;
+    const hasTenantWidgets = Boolean(statsGrid || favoritesGrid || requestsBody || appointmentsBody || notificationsList || rentedRoomContainer);
 
-    if (!statsGrid || !auth?.token?.() || currentUser?.role !== "USER") {
+    if (!hasTenantWidgets || !auth?.token?.() || currentUser?.role !== "USER") {
         return;
     }
 
     async function loadDashboard() {
         setLoading();
 
+        const shouldLoadFavorites = Boolean(favoritesGrid || statsGrid);
+        const shouldLoadRequests = Boolean(requestsBody || rentedRoomContainer || statsGrid);
+        const shouldLoadAppointments = Boolean(appointmentsBody || statsGrid);
+        const shouldLoadNotifications = Boolean(notificationsList || statsGrid);
+
         const [favorites, requests, appointments, notifications] = await Promise.all([
-            optionalApi("/api/favorite-rooms", []),
-            optionalApi("/api/rental-requests/my", []),
-            optionalApi("/api/viewing-appointments/my", []),
-            optionalApi("/api/notifications", [])
+            shouldLoadFavorites ? optionalApi("/api/favorite-rooms", []) : [],
+            shouldLoadRequests ? optionalApi("/api/rental-requests/my", []) : [],
+            shouldLoadAppointments ? optionalApi("/api/viewing-appointments/my", []) : [],
+            shouldLoadNotifications ? optionalApi("/api/notifications", []) : []
         ]);
 
-        renderStats(favorites, requests, appointments, notifications);
+        if (statsGrid) {
+            renderStats(favorites, requests, appointments, notifications);
+        }
         renderFavorites(favorites);
         renderRequests(requests);
         renderAppointments(appointments);
+        await renderRentedRooms(requests);
         renderNotifications(notifications);
         scheduleNotificationAutoRead(notifications);
         auth.refreshNotificationIndicators?.();
@@ -57,6 +68,9 @@
         if (notificationsList) {
             notificationsList.innerHTML = `<div class="empty-state">Đang tải thông báo...</div>`;
         }
+        if (rentedRoomContainer) {
+            rentedRoomContainer.innerHTML = `<div class="empty-state">Đang tải phòng đang thuê...</div>`;
+        }
     }
 
     function renderStats(favorites, requests, appointments, notifications) {
@@ -73,7 +87,7 @@
             return;
         }
         favoriteRooms = rooms;
-        if (favoriteRooms.length <= FAVORITE_PREVIEW_LIMIT) {
+        if (!isFavoritesFullPage && favoriteRooms.length <= FAVORITE_PREVIEW_LIMIT) {
             showAllFavorites = false;
         }
         renderFavoriteCards();
@@ -85,13 +99,17 @@
             updateFavoriteExpandButton();
             return;
         }
-        const visibleRooms = showAllFavorites ? favoriteRooms : favoriteRooms.slice(0, FAVORITE_PREVIEW_LIMIT);
+        const visibleRooms = showAllFavorites || isFavoritesFullPage ? favoriteRooms : favoriteRooms.slice(0, FAVORITE_PREVIEW_LIMIT);
         favoritesGrid.innerHTML = visibleRooms.map(roomCard).join("");
         updateFavoriteExpandButton();
     }
 
     function updateFavoriteExpandButton() {
         if (!favoriteExpandButton) {
+            return;
+        }
+        if (isFavoritesFullPage) {
+            favoriteExpandButton.hidden = true;
             return;
         }
         const canExpand = favoriteRooms.length > FAVORITE_PREVIEW_LIMIT;
@@ -154,6 +172,73 @@
                 <td>${item.status === "PENDING" ? `<button class="btn btn-outline" type="button" data-cancel-appointment="${item.id}">Hủy</button>` : `<a class="btn btn-outline" href="room-detail.html?id=${item.roomId}">Chi tiết</a>`}</td>
             </tr>
         `).join("");
+    }
+
+    async function renderRentedRooms(requests) {
+        if (!rentedRoomContainer) {
+            return;
+        }
+
+        const acceptedRequests = requests.filter((item) => item.status === "ACCEPTED");
+        if (!acceptedRequests.length) {
+            rentedRoomContainer.innerHTML = `<div class="empty-state">Bạn chưa có phòng đang thuê. Khi chủ trọ xác nhận yêu cầu thuê, phòng sẽ xuất hiện tại đây.</div>`;
+            return;
+        }
+
+        const entries = await Promise.all(acceptedRequests.map(async (request) => ({
+            request,
+            room: await optionalApi(`/api/rooms/${request.roomId}`, null)
+        })));
+
+        rentedRoomContainer.innerHTML = `
+            <div class="rented-room-list">
+                ${entries.map(rentedRoomCard).join("")}
+            </div>
+        `;
+    }
+
+    function rentedRoomCard({ request, room }) {
+        const title = room?.title || request.roomTitle || "Phòng đang thuê";
+        const image = room?.imageUrls?.[0] || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=85";
+        const amenities = amenityChips(room?.amenities);
+        return `
+            <article class="rented-room-card">
+                <div class="room-media"><img src="${escapeAttribute(image)}" alt="${escapeAttribute(title)}"></div>
+                <div class="rented-room-content">
+                    <span class="badge badge-approved">Đang thuê</span>
+                    <h3>${escapeHtml(title)}</h3>
+                    <p class="room-address">${escapeHtml(room?.address || "Địa chỉ đang cập nhật")}</p>
+                    <dl class="rented-room-details">
+                        ${detailItem("Giá thuê", room ? `${formatMoney(room.price)}/tháng` : "Đang cập nhật")}
+                        ${detailItem("Tiền cọc", room ? `${formatMoney(room.deposit)}` : "Đang cập nhật")}
+                        ${detailItem("Diện tích", room?.area ? `${room.area} m²` : "Đang cập nhật")}
+                        ${detailItem("Thời gian thuê", request.expectedRentalTime || "Chưa cập nhật")}
+                        ${detailItem("Người thuê", request.fullName || currentUser?.fullName || "Chưa cập nhật")}
+                        ${detailItem("Số điện thoại", request.phone || currentUser?.phone || "Chưa cập nhật")}
+                        ${detailItem("Chủ trọ", room?.landlordName || "Đang cập nhật")}
+                        ${detailItem("Liên hệ chủ trọ", room?.landlordPhone || "Đang cập nhật")}
+                    </dl>
+                    ${amenities ? `<div class="amenities rented-room-amenities">${amenities}</div>` : ""}
+                    <div class="table-actions">
+                        <a class="btn btn-primary" href="room-detail.html?id=${request.roomId}">Xem chi tiết phòng</a>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    function detailItem(label, value) {
+        return `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`;
+    }
+
+    function amenityChips(value) {
+        return String(value || "")
+            .split(/[,\n]/)
+            .map((item) => item.trim())
+            .filter(Boolean)
+            .slice(0, 8)
+            .map((item) => `<span>${escapeHtml(item)}</span>`)
+            .join("");
     }
 
     function renderNotifications(notifications) {

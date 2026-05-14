@@ -6,7 +6,16 @@
     <title>Chuyển tới tài khoản | One Room One Love</title>
     <link rel="stylesheet" href="assets/css/styles.css">
     <script>
-        const target = `profile.html${window.location.search}${window.location.hash}`;
+        const routes = {
+            "#account-details": "profile.html",
+            "#favorites": "profile-favorites.html",
+            "#requests": "profile-requests.html",
+            "#appointments": "profile-requests.html#appointments",
+            "#notifications": "profile-notifications.html"
+        };
+        const route = routes[window.location.hash] || "profile.html";
+        const [path, hash] = route.split("#");
+        const target = `${path}${window.location.search}${hash ? `#${hash}` : ""}`;
         window.location.replace(target);
     </script>
 </head>

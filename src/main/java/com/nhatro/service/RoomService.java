@@ -13,19 +13,25 @@ import com.nhatro.repository.RoomRepository;
 import com.nhatro.repository.RoomReviewRepository;
 import com.nhatro.repository.RoomVideoRepository;
 import com.nhatro.security.AuthContext;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class RoomService {
@@ -47,6 +53,12 @@ public class RoomService {
     @Inject
     AuthContext authContext;
 
+    @Inject
+    EntityManager entityManager;
+
+    @ConfigProperty(name = "app.supported-cities")
+    List<String> supportedCities;
+
     @Transactional
     public RoomDtos.RoomSearchResponse search(
             String keyword,
@@ -62,73 +74,61 @@ public class RoomService {
     ) {
         Map<String, Object> params = new HashMap<>();
         List<String> conditions = new ArrayList<>();
-        conditions.add("approvalStatus = :approved");
-        conditions.add("status <> :hidden");
-        conditions.add("(lower(address) like :hanoiAccent or lower(address) like :hanoiPlain)");
+        conditions.add("r.approvalStatus = :approved");
+        conditions.add("r.status <> :hidden");
         params.put("approved", ApprovalStatus.APPROVED);
         params.put("hidden", RoomStatus.HIDDEN);
-        params.put("hanoiAccent", "%hà nội%");
-        params.put("hanoiPlain", "%ha noi%");
+        addSupportedCityConditions(conditions, params);
 
         if (hasText(keyword)) {
-            conditions.add("(lower(title) like :keyword or lower(address) like :keyword)");
-            params.put("keyword", "%" + keyword.trim().toLowerCase() + "%");
+            conditions.add("(lower(r.title) like :keyword or lower(r.address) like :keyword)");
+            params.put("keyword", "%" + keyword.trim().toLowerCase(Locale.ROOT) + "%");
         }
         if (hasText(location)) {
-            conditions.add("lower(address) like :location");
-            params.put("location", "%" + location.trim().toLowerCase() + "%");
+            conditions.add("lower(r.address) like :location");
+            params.put("location", "%" + location.trim().toLowerCase(Locale.ROOT) + "%");
         }
         if (minPrice != null) {
-            conditions.add("price >= :minPrice");
+            conditions.add("r.price >= :minPrice");
             params.put("minPrice", minPrice);
         }
         if (maxPrice != null) {
-            conditions.add("price <= :maxPrice");
+            conditions.add("r.price <= :maxPrice");
             params.put("maxPrice", maxPrice);
         }
         if (minArea != null) {
-            conditions.add("area >= :minArea");
+            conditions.add("r.area >= :minArea");
             params.put("minArea", minArea);
         }
         if (maxArea != null) {
-            conditions.add("area <= :maxArea");
+            conditions.add("r.area <= :maxArea");
             params.put("maxArea", maxArea);
         }
         if (status != null) {
-            conditions.add("status = :status");
+            conditions.add("r.status = :status");
             params.put("status", status);
         }
         if (hasText(furnitureType)) {
-            conditions.add("lower(furnitureType) like :furnitureType");
-            params.put("furnitureType", "%" + furnitureType.trim().toLowerCase() + "%");
+            conditions.add("lower(r.furnitureType) like :furnitureType");
+            params.put("furnitureType", "%" + furnitureType.trim().toLowerCase(Locale.ROOT) + "%");
         }
 
-        PanacheQuery<Room> query = roomRepository.find(String.join(" and ", conditions), Sort.by("createdAt").descending(), params);
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 50);
-        long total = query.count();
-        List<RoomDtos.RoomResponse> rooms = query.page(Page.of(safePage, safeSize))
-                .list()
-                .stream()
-                .map(this::toResponse)
-                .toList();
-        return new RoomDtos.RoomSearchResponse(rooms, total, safePage, safeSize);
+        String whereClause = String.join(" and ", conditions);
+        long total = countRooms(whereClause, params);
+        List<Room> rooms = findRoomsWithLandlord(whereClause, params, safePage * safeSize, safeSize);
+        return new RoomDtos.RoomSearchResponse(toResponses(rooms), total, safePage, safeSize);
     }
 
     @Transactional
     public List<RoomDtos.RoomResponse> listMine(User user) {
+        Map<String, Object> params = new HashMap<>();
         if (user.role == Role.ADMIN) {
-            return roomRepository.findAll(Sort.by("createdAt").descending())
-                    .list()
-                    .stream()
-                    .map(this::toResponse)
-                    .toList();
+            return toResponses(findRoomsWithLandlord("1 = 1", params));
         }
-        return roomRepository.find("landlord = ?1", Sort.by("createdAt").descending(), user)
-                .list()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        params.put("landlord", user);
+        return toResponses(findRoomsWithLandlord("r.landlord = :landlord", params));
     }
 
     @Transactional
@@ -136,7 +136,7 @@ public class RoomService {
         Room room = getRoom(id);
         boolean publicVisible = room.approvalStatus == ApprovalStatus.APPROVED
                 && room.status != RoomStatus.HIDDEN
-                && isHanoiAddress(room.address);
+                && isSupportedAddress(room.address);
         boolean ownerOrAdmin = authContext.currentUser()
                 .map(user -> user.role == Role.ADMIN || room.landlord.id.equals(user.id))
                 .orElse(false);
@@ -205,11 +205,9 @@ public class RoomService {
 
     @Transactional
     public List<RoomDtos.RoomResponse> pendingRooms() {
-        return roomRepository.find("approvalStatus = ?1", Sort.by("createdAt").descending(), ApprovalStatus.PENDING)
-                .list()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        Map<String, Object> params = new HashMap<>();
+        params.put("pending", ApprovalStatus.PENDING);
+        return toResponses(findRoomsWithLandlord("r.approvalStatus = :pending", params));
     }
 
     @Transactional
@@ -237,27 +235,44 @@ public class RoomService {
     }
 
     public RoomDtos.RoomResponse toResponse(Room room) {
-        List<String> imageUrls = imageRepository.find("room = ?1", room)
-                .list()
-                .stream()
-                .map(image -> image.imageUrl)
-                .toList();
-        List<String> videoUrls = videoRepository.find("room = ?1", room)
-                .list()
-                .stream()
-                .map(video -> video.videoUrl)
-                .toList();
-        long reviewCount = reviewRepository.countByRoom(room);
-        Double averageRating = reviewCount == 0 ? null : reviewRepository.averageRating(room);
-        if (averageRating != null) {
-            averageRating = Math.round(averageRating * 10.0) / 10.0;
+        return toResponses(List.of(room)).get(0);
+    }
+
+    public List<RoomDtos.RoomResponse> toResponses(List<Room> rooms) {
+        if (rooms == null || rooms.isEmpty()) {
+            return List.of();
         }
-        return RoomDtos.RoomResponse.from(room, imageUrls, videoUrls, averageRating, reviewCount);
+
+        List<Long> roomIds = rooms.stream()
+                .map(room -> room.id)
+                .filter(id -> id != null)
+                .distinct()
+                .toList();
+        Map<Long, List<String>> imageUrlsByRoom = loadImageUrls(roomIds);
+        Map<Long, List<String>> videoUrlsByRoom = loadVideoUrls(roomIds);
+        Map<Long, RoomReviewRepository.RoomReviewStats> reviewStatsByRoom = reviewRepository.statsByRoomIds(roomIds)
+                .stream()
+                .collect(Collectors.toMap(RoomReviewRepository.RoomReviewStats::roomId, Function.identity()));
+
+        return rooms.stream()
+                .map(room -> {
+                    RoomReviewRepository.RoomReviewStats reviewStats = reviewStatsByRoom.get(room.id);
+                    long reviewCount = reviewStats == null ? 0 : reviewStats.reviewCount();
+                    Double averageRating = reviewStats == null ? null : roundRating(reviewStats.averageRating());
+                    return RoomDtos.RoomResponse.from(
+                            room,
+                            imageUrlsByRoom.getOrDefault(room.id, List.of()),
+                            videoUrlsByRoom.getOrDefault(room.id, List.of()),
+                            averageRating,
+                            reviewCount
+                    );
+                })
+                .toList();
     }
 
     private void applyFields(Room room, RoomDtos.RoomRequest request) {
-        if (!isHanoiAddress(request.address())) {
-            throw new WebApplicationException("Hiện hệ thống chỉ hỗ trợ phòng trọ tại Hà Nội. Vui lòng nhập địa chỉ có Hà Nội.", Response.Status.BAD_REQUEST);
+        if (!isSupportedAddress(request.address())) {
+            throw new WebApplicationException("Hiện hệ thống chỉ hỗ trợ phòng trọ tại: " + supportedCityMessage() + ". Vui lòng nhập địa chỉ thuộc khu vực được hỗ trợ.", Response.Status.BAD_REQUEST);
         }
         room.title = request.title().trim();
         room.price = request.price();
@@ -272,12 +287,141 @@ public class RoomService {
         room.longitude = request.longitude();
     }
 
-    private boolean isHanoiAddress(String address) {
+    private long countRooms(String whereClause, Map<String, Object> params) {
+        TypedQuery<Long> query = entityManager.createQuery("select count(r) from Room r where " + whereClause, Long.class);
+        setParameters(query, params);
+        return query.getSingleResult();
+    }
+
+    private List<Room> findRoomsWithLandlord(String whereClause, Map<String, Object> params) {
+        return findRoomsWithLandlord(whereClause, params, null, null);
+    }
+
+    private List<Room> findRoomsWithLandlord(String whereClause, Map<String, Object> params, Integer offset, Integer limit) {
+        TypedQuery<Room> query = entityManager.createQuery("""
+                select r
+                from Room r
+                join fetch r.landlord
+                where %s
+                order by r.createdAt desc
+                """.formatted(whereClause), Room.class);
+        setParameters(query, params);
+        if (offset != null) {
+            query.setFirstResult(offset);
+        }
+        if (limit != null) {
+            query.setMaxResults(limit);
+        }
+        return query.getResultList();
+    }
+
+    private void setParameters(Query query, Map<String, Object> params) {
+        params.forEach(query::setParameter);
+    }
+
+    private Map<Long, List<String>> loadImageUrls(List<Long> roomIds) {
+        if (roomIds.isEmpty()) {
+            return Map.of();
+        }
+        return entityManager.createQuery("""
+                        select i
+                        from RoomImage i
+                        where i.room.id in :roomIds
+                        order by i.id
+                        """, RoomImage.class)
+                .setParameter("roomIds", roomIds)
+                .getResultList()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        image -> image.room.id,
+                        Collectors.mapping(image -> image.imageUrl, Collectors.toList())
+                ));
+    }
+
+    private Map<Long, List<String>> loadVideoUrls(List<Long> roomIds) {
+        if (roomIds.isEmpty()) {
+            return Map.of();
+        }
+        return entityManager.createQuery("""
+                        select v
+                        from RoomVideo v
+                        where v.room.id in :roomIds
+                        order by v.id
+                        """, RoomVideo.class)
+                .setParameter("roomIds", roomIds)
+                .getResultList()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        video -> video.room.id,
+                        Collectors.mapping(video -> video.videoUrl, Collectors.toList())
+                ));
+    }
+
+    private Double roundRating(Double averageRating) {
+        return averageRating == null ? null : Math.round(averageRating * 10.0) / 10.0;
+    }
+
+    private void addSupportedCityConditions(List<String> conditions, Map<String, Object> params) {
+        List<String> cityTerms = supportedCityQueryTerms();
+        if (cityTerms.isEmpty()) {
+            return;
+        }
+
+        List<String> cityConditions = new ArrayList<>();
+        for (int index = 0; index < cityTerms.size(); index++) {
+            String paramName = "supportedCity" + index;
+            cityConditions.add("lower(r.address) like :" + paramName);
+            params.put(paramName, "%" + cityTerms.get(index) + "%");
+        }
+        conditions.add("(" + String.join(" or ", cityConditions) + ")");
+    }
+
+    private boolean isSupportedAddress(String address) {
         if (!hasText(address)) {
             return false;
         }
-        String normalized = address.toLowerCase();
-        return normalized.contains("hà nội") || normalized.contains("ha noi");
+        List<String> cities = configuredSupportedCities();
+        if (cities.isEmpty()) {
+            return true;
+        }
+
+        String normalizedAddress = normalizeLocation(address);
+        return cities.stream()
+                .map(this::normalizeLocation)
+                .anyMatch(normalizedAddress::contains);
+    }
+
+    private List<String> supportedCityQueryTerms() {
+        LinkedHashSet<String> terms = new LinkedHashSet<>();
+        for (String city : configuredSupportedCities()) {
+            terms.add(city.toLowerCase(Locale.ROOT));
+            terms.add(normalizeLocation(city));
+        }
+        return terms.stream()
+                .filter(this::hasText)
+                .toList();
+    }
+
+    private List<String> configuredSupportedCities() {
+        if (supportedCities == null) {
+            return List.of();
+        }
+        return supportedCities.stream()
+                .filter(this::hasText)
+                .map(String::trim)
+                .toList();
+    }
+
+    private String supportedCityMessage() {
+        List<String> cities = configuredSupportedCities();
+        return cities.isEmpty() ? "các khu vực đã cấu hình" : String.join(", ", cities);
+    }
+
+    private String normalizeLocation(String value) {
+        String lower = value.toLowerCase(Locale.ROOT).replace('đ', 'd');
+        String noDiacritics = Normalizer.normalize(lower, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "");
+        return noDiacritics.replaceAll("[^a-z0-9]+", " ").trim();
     }
 
     private void replaceMedia(Room room, List<String> imageUrls, List<String> videoUrls) {

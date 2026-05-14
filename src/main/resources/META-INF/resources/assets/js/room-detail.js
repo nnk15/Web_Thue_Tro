@@ -429,7 +429,7 @@
                 });
                 showRentalMessage("success", "Đã gửi yêu cầu thuê. Trạng thái hiện tại là chờ xác nhận.");
                 setTimeout(() => {
-                    window.location.href = "profile.html#requests";
+                    window.location.href = "profile-requests.html";
                 }, 900);
             } catch (error) {
                 showRentalMessage("error", error.message);
@@ -451,7 +451,7 @@
                 });
                 showAppointmentMessage("success", "Đã gửi lịch xem phòng. Trạng thái hiện tại là chờ xác nhận.");
                 setTimeout(() => {
-                    window.location.href = "profile.html#appointments";
+                    window.location.href = "profile-requests.html#appointments";
                 }, 900);
             } catch (error) {
                 showAppointmentMessage("error", error.message);
@@ -650,7 +650,13 @@
     }
 
     function tenantActionUrl(roomId, sectionId) {
-        const next = `profile.html?roomId=${roomId}#${sectionId}`;
+        const routes = {
+            favorites: "profile-favorites.html",
+            requests: "profile-requests.html",
+            appointments: "profile-requests.html#appointments",
+            notifications: "profile-notifications.html"
+        };
+        const next = routes[sectionId] || `room-detail.html?id=${roomId}`;
         const auth = window.NhaTroAuth;
         const user = auth?.currentUser?.();
         return auth?.token?.() && user?.role === "USER"

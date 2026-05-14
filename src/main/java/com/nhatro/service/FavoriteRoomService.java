@@ -43,11 +43,7 @@ public class FavoriteRoomService {
 
     @Transactional
     public List<RoomDtos.RoomResponse> list(User user) {
-        return favoriteRepository.find("user = ?1 order by createdAt desc", user)
-                .list()
-                .stream()
-                .map(favorite -> roomService.toResponse(favorite.room))
-                .toList();
+        return roomService.toResponses(favoriteRepository.listRoomsByUser(user));
     }
 
     @Transactional

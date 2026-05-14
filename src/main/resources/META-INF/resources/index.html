@@ -50,8 +50,8 @@
     <section class="home-hero">
         <div class="home-hero-overlay"></div>
         <div class="container home-hero-content">
-            <h1>Phòng trọ như ở nhà</h1>
-            <p>Tìm phòng trọ, căn hộ mini và studio gần trường học, khu văn phòng, bến xe và các khu vực sống tiện lợi tại Hà Nội.</p>
+            <h1>Tìm trọ như ý, ở trọ an tâm</h1>
+            <p>Hệ thống tìm kiếm phòng trọ uy tín, đầy đủ tiện nghi cho sinh viên và người đi làm.</p>
 
             <div class="home-trust-badges" aria-label="Diem manh dich vu">
                 <span>
@@ -68,13 +68,75 @@
                 </span>
             </div>
 
-            <form class="home-search" action="rooms.html">
-                <label for="home-search-input">Tìm theo</label>
-                <input id="home-search-input" type="search" name="keyword" placeholder="Cầu Giấy, Đống Đa, Hai Bà Trưng hoặc tên phòng">
-                <button type="submit" aria-label="Tìm kiếm">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
-                </button>
-            </form>
+            <div class="home-search-wrap">
+                <form class="home-search" action="rooms.html">
+                    <label for="home-search-input">Tìm phòng trọ theo</label>
+                    <input id="home-search-input" type="search" name="keyword" placeholder="Quận huyện, Đại học hoặc Địa điểm" autocomplete="off" aria-controls="home-search-suggestions" aria-expanded="false">
+                    <button type="submit" aria-label="Tìm kiếm">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+                    </button>
+                </form>
+                <div class="home-search-suggestions" id="home-search-suggestions" hidden>
+                    <div class="suggestion-tabs" aria-label="Gợi ý nhanh">
+                        <button class="active" type="button" data-search-suggestion="Hà Nội" data-search-type="location">Tất cả</button>
+                        <button type="button" data-search-suggestion="Cầu Giấy" data-search-type="location">Cầu Giấy</button>
+                        <button type="button" data-search-suggestion="Đống Đa" data-search-type="location">Đống Đa</button>
+                        <button type="button" data-search-suggestion="Hai Bà Trưng" data-search-type="location">Hai Bà Trưng</button>
+                        <button type="button" data-search-suggestion="Thanh Xuân" data-search-type="location">Thanh Xuân</button>
+                        <button type="button" data-search-suggestion="Hà Đông" data-search-type="location">Hà Đông</button>
+                    </div>
+
+                    <div class="suggestion-section">
+                        <h3>
+                            <span aria-hidden="true">↻</span>
+                            Tìm kiếm gần đây
+                        </h3>
+                        <div class="suggestion-list compact" data-recent-searches>
+                            <span class="suggestion-empty">Chưa có tìm kiếm gần đây.</span>
+                        </div>
+                    </div>
+
+                    <div class="suggestion-section">
+                        <h3>
+                            <span aria-hidden="true">⌖</span>
+                            Quận huyện nổi bật
+                            <strong>⚡</strong>
+                        </h3>
+                        <div class="suggestion-list">
+                            <button type="button" data-search-suggestion="Cầu Giấy" data-search-type="location">Cầu Giấy</button>
+                            <button type="button" data-search-suggestion="Đống Đa" data-search-type="location">Đống Đa</button>
+                            <button type="button" data-search-suggestion="Hai Bà Trưng" data-search-type="location">Hai Bà Trưng</button>
+                            <button type="button" data-search-suggestion="Thanh Xuân" data-search-type="location">Thanh Xuân</button>
+                            <button type="button" data-search-suggestion="Tây Hồ" data-search-type="location">Tây Hồ</button>
+                            <button type="button" data-search-suggestion="Nam Từ Liêm" data-search-type="location">Nam Từ Liêm</button>
+                            <button type="button" data-search-suggestion="Hà Đông" data-search-type="location">Hà Đông</button>
+                            <button type="button" data-search-suggestion="Hoàng Mai" data-search-type="location">Hoàng Mai</button>
+                            <button type="button" data-search-suggestion="Ba Đình" data-search-type="location">Ba Đình</button>
+                            <button type="button" data-search-suggestion="Long Biên" data-search-type="location">Long Biên</button>
+                            <button type="button" data-search-suggestion="Bắc Từ Liêm" data-search-type="location">Bắc Từ Liêm</button>
+                            <button type="button" data-search-suggestion="Hoàn Kiếm" data-search-type="location">Hoàn Kiếm</button>
+                        </div>
+                    </div>
+
+                    <div class="suggestion-section">
+                        <h3>
+                            <span aria-hidden="true">▣</span>
+                            Trường đại học nổi bật
+                            <strong>⚡</strong>
+                        </h3>
+                        <div class="suggestion-list">
+                            <button type="button" data-search-suggestion="Đại học Bách Khoa Hà Nội" data-search-type="keyword">ĐH Bách Khoa Hà Nội</button>
+                            <button type="button" data-search-suggestion="Đại học Kinh tế Quốc dân" data-search-type="keyword">ĐH Kinh tế Quốc dân</button>
+                            <button type="button" data-search-suggestion="Đại học Quốc gia Hà Nội" data-search-type="keyword">ĐH Quốc gia Hà Nội</button>
+                            <button type="button" data-search-suggestion="Đại học Ngoại thương" data-search-type="keyword">ĐH Ngoại thương</button>
+                            <button type="button" data-search-suggestion="Học viện Ngân hàng" data-search-type="keyword">Học viện Ngân hàng</button>
+                            <button type="button" data-search-suggestion="Đại học Thương mại" data-search-type="keyword">ĐH Thương mại</button>
+                            <button type="button" data-search-suggestion="Đại học Hà Nội" data-search-type="keyword">ĐH Hà Nội</button>
+                            <button type="button" data-search-suggestion="Học viện Báo chí và Tuyên truyền" data-search-type="keyword">HV Báo chí & Tuyên truyền</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -118,42 +180,71 @@
                 <p>Chọn nhanh khu vực có nhiều tin đăng, giao thông thuận tiện và giá thuê phù hợp.</p>
             </div>
 
-            <div class="home-area-tabs" aria-label="Loc theo thanh pho">
-                <a class="active" href="rooms.html?location=Cầu%20Giấy">Cầu Giấy</a>
-                <a href="rooms.html?location=Đống%20Đa">Đống Đa</a>
-                <a href="rooms.html?location=Hai%20Bà%20Trưng">Hai Bà Trưng</a>
-                <a href="rooms.html?location=Thanh%20Xuân">Thanh Xuân</a>
-                <a href="rooms.html?location=Tây%20Hồ">Tây Hồ</a>
-                <a href="rooms.html?location=Nam%20Từ%20Liêm">Nam Từ Liêm</a>
-                <a href="rooms.html?location=Hoàng%20Mai">Hoàng Mai</a>
-            </div>
-
-            <div class="home-city-grid">
-                <a class="home-city-card" href="rooms.html?location=Cầu%20Giấy" data-popular-area="Cầu Giấy">
-                    <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=900&q=80" alt="Phòng trọ Cầu Giấy">
-                    <span>Cầu Giấy</span>
-                    <small data-area-count>Đang tải...</small>
-                </a>
-                <a class="home-city-card" href="rooms.html?location=Đống%20Đa" data-popular-area="Đống Đa">
-                    <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=900&q=80" alt="Phòng trọ Đống Đa">
-                    <span>Đống Đa</span>
-                    <small data-area-count>Đang tải...</small>
-                </a>
-                <a class="home-city-card" href="rooms.html?location=Tây%20Hồ" data-popular-area="Tây Hồ">
-                    <img src="https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=900&q=80" alt="Phòng trọ Tây Hồ">
-                    <span>Tây Hồ</span>
-                    <small data-area-count>Đang tải...</small>
-                </a>
-                <a class="home-city-card" href="rooms.html?location=Hà%20Đông" data-popular-area="Hà Đông">
-                    <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80" alt="Phòng trọ Hà Đông">
-                    <span>Hà Đông</span>
-                    <small data-area-count>Đang tải...</small>
-                </a>
-                <a class="home-city-card" href="rooms.html?location=Hoàng%20Mai" data-popular-area="Hoàng Mai">
-                    <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=900&q=80" alt="Phòng trọ Hoàng Mai">
-                    <span>Hoàng Mai</span>
-                    <small data-area-count>Đang tải...</small>
-                </a>
+            <div class="popular-area-carousel-wrap">
+                <button class="popular-area-prev" type="button" data-popular-area-prev aria-label="Xem khu vực phía trước">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+                </button>
+                <div class="popular-area-carousel" data-popular-area-carousel aria-label="Khu vực phòng trọ nổi tiếng">
+                    <a class="popular-area-card" href="rooms.html?location=Cầu%20Giấy" data-popular-area="Cầu Giấy">
+                        <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Cầu Giấy">
+                        <span>Cầu Giấy</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Đống%20Đa" data-popular-area="Đống Đa">
+                        <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Đống Đa">
+                        <span>Đống Đa</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Hai%20Bà%20Trưng" data-popular-area="Hai Bà Trưng">
+                        <img src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Hai Bà Trưng">
+                        <span>Hai Bà Trưng</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Thanh%20Xuân" data-popular-area="Thanh Xuân">
+                        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Thanh Xuân">
+                        <span>Thanh Xuân</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Tây%20Hồ" data-popular-area="Tây Hồ">
+                        <img src="https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Tây Hồ">
+                        <span>Tây Hồ</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Nam%20Từ%20Liêm" data-popular-area="Nam Từ Liêm">
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Nam Từ Liêm">
+                        <span>Nam Từ Liêm</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Hà%20Đông" data-popular-area="Hà Đông">
+                        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Hà Đông">
+                        <span>Hà Đông</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Hoàng%20Mai" data-popular-area="Hoàng Mai">
+                        <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Hoàng Mai">
+                        <span>Hoàng Mai</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Ba%20Đình" data-popular-area="Ba Đình">
+                        <img src="https://images.unsplash.com/photo-1524230572899-a752b3835840?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Ba Đình">
+                        <span>Ba Đình</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Long%20Biên" data-popular-area="Long Biên">
+                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Long Biên">
+                        <span>Long Biên</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Bắc%20Từ%20Liêm" data-popular-area="Bắc Từ Liêm">
+                        <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Bắc Từ Liêm">
+                        <span>Bắc Từ Liêm</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Hoàn%20Kiếm" data-popular-area="Hoàn Kiếm">
+                        <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Hoàn Kiếm">
+                        <span>Hoàn Kiếm</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Gia%20Lâm" data-popular-area="Gia Lâm">
+                        <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Gia Lâm">
+                        <span>Gia Lâm</span>
+                    </a>
+                    <a class="popular-area-card" href="rooms.html?location=Đông%20Anh" data-popular-area="Đông Anh">
+                        <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Đông Anh">
+                        <span>Đông Anh</span>
+                    </a>
+                </div>
+                <button class="popular-area-next" type="button" data-popular-area-next aria-label="Xem thêm khu vực">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </button>
             </div>
         </div>
     </section>
@@ -165,27 +256,52 @@
                 <p>Từ phòng riêng, studio đến căn hộ mini, chúng tôi đều có đủ.</p>
             </div>
 
-            <div class="property-tabs" aria-label="Lọc nhanh khu vực Hà Nội">
-                <a class="property-chip active" href="rooms.html?location=Ha%20Noi">
-                    <span>🏠</span>
-                    Hà Nội
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                </a>
-                <a class="property-chip selected" href="rooms.html?location=Cau%20Giay">Cầu Giấy</a>
-                <a class="property-chip" href="rooms.html?location=Dong%20Da">Đống Đa</a>
-                <a class="property-chip" href="rooms.html?location=Hai%20Ba%20Trung">Hai Bà Trưng</a>
-                <a class="property-chip" href="rooms.html?location=Thanh%20Xuan">Thanh Xuân</a>
-                <a class="property-chip" href="rooms.html?location=Tay%20Ho">Tây Hồ</a>
-                <a class="property-chip" href="rooms.html?location=Nam%20Tu%20Liem">Nam Từ Liêm</a>
-                <a class="property-chip" href="rooms.html?location=Ha%20Dong">Hà Đông</a>
+            <div class="property-tabs-wrap">
+                <button class="property-tabs-prev" type="button" data-property-tabs-prev aria-label="Xem quận huyện phía trước">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+                </button>
+                <div class="property-tabs" data-property-tabs aria-label="Lọc nhanh khu vực Hà Nội">
+                    <button class="property-chip selected" type="button" data-property-area="Cầu Giấy">Cầu Giấy</button>
+                    <button class="property-chip" type="button" data-property-area="Đống Đa">Đống Đa</button>
+                    <button class="property-chip" type="button" data-property-area="Hai Bà Trưng">Hai Bà Trưng</button>
+                    <button class="property-chip" type="button" data-property-area="Thanh Xuân">Thanh Xuân</button>
+                    <button class="property-chip" type="button" data-property-area="Tây Hồ">Tây Hồ</button>
+                    <button class="property-chip" type="button" data-property-area="Nam Từ Liêm">Nam Từ Liêm</button>
+                    <button class="property-chip" type="button" data-property-area="Hà Đông">Hà Đông</button>
+                    <button class="property-chip" type="button" data-property-area="Hoàng Mai">Hoàng Mai</button>
+                    <button class="property-chip" type="button" data-property-area="Ba Đình">Ba Đình</button>
+                    <button class="property-chip" type="button" data-property-area="Long Biên">Long Biên</button>
+                    <button class="property-chip" type="button" data-property-area="Bắc Từ Liêm">Bắc Từ Liêm</button>
+                    <button class="property-chip" type="button" data-property-area="Hoàn Kiếm">Hoàn Kiếm</button>
+                    <button class="property-chip" type="button" data-property-area="Gia Lâm">Gia Lâm</button>
+                    <button class="property-chip" type="button" data-property-area="Đông Anh">Đông Anh</button>
+                    <button class="property-chip" type="button" data-property-area="Hoài Đức">Hoài Đức</button>
+                    <button class="property-chip" type="button" data-property-area="Thanh Trì">Thanh Trì</button>
+                    <button class="property-chip" type="button" data-property-area="Sóc Sơn">Sóc Sơn</button>
+                    <button class="property-chip" type="button" data-property-area="Sơn Tây">Sơn Tây</button>
+                    <button class="property-chip" type="button" data-property-area="Ba Vì">Ba Vì</button>
+                    <button class="property-chip" type="button" data-property-area="Chương Mỹ">Chương Mỹ</button>
+                    <button class="property-chip" type="button" data-property-area="Đan Phượng">Đan Phượng</button>
+                    <button class="property-chip" type="button" data-property-area="Mê Linh">Mê Linh</button>
+                    <button class="property-chip" type="button" data-property-area="Mỹ Đức">Mỹ Đức</button>
+                    <button class="property-chip" type="button" data-property-area="Phú Xuyên">Phú Xuyên</button>
+                    <button class="property-chip" type="button" data-property-area="Phúc Thọ">Phúc Thọ</button>
+                    <button class="property-chip" type="button" data-property-area="Quốc Oai">Quốc Oai</button>
+                    <button class="property-chip" type="button" data-property-area="Thạch Thất">Thạch Thất</button>
+                    <button class="property-chip" type="button" data-property-area="Thanh Oai">Thanh Oai</button>
+                    <button class="property-chip" type="button" data-property-area="Thường Tín">Thường Tín</button>
+                    <button class="property-chip" type="button" data-property-area="Ứng Hòa">Ứng Hòa</button>
+                </div>
+                <button class="property-tabs-next" type="button" data-property-tabs-next aria-label="Xem thêm quận huyện">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </button>
             </div>
 
             <div class="property-carousel-wrap">
-                <div class="property-carousel" aria-label="Danh sách phòng trọ nổi bật">
+                <div class="property-carousel" aria-label="Danh sách phòng trọ">
                     <article class="property-card">
                         <div class="property-photo">
                             <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=700&q=85" alt="Studio gần Đại học Kinh tế Quốc dân">
-                            <span class="property-badge dark">Món đồ của ngày</span>
                             <button class="property-heart" aria-label="Lưu yêu thích">♡</button>
                             <div class="property-dots"><span></span><span></span><span></span></div>
                         </div>
@@ -212,7 +328,6 @@
                     <article class="property-card">
                         <div class="property-photo">
                             <img src="https://images.unsplash.com/photo-1523755231516-e43fd2e8dca5?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Cầu Giấy">
-                            <span class="property-badge">Tiết kiệm đến 500K</span>
                             <button class="property-heart" aria-label="Lưu yêu thích">♡</button>
                             <div class="property-dots"><span></span><span></span><span></span></div>
                         </div>
@@ -226,7 +341,6 @@
                     <article class="property-card">
                         <div class="property-photo">
                             <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=700&q=85" alt="Căn hộ mini Thanh Xuân">
-                            <span class="property-badge">Tiết kiệm đến 300K</span>
                             <button class="property-heart" aria-label="Lưu yêu thích">♡</button>
                             <div class="property-dots"><span></span><span></span><span></span></div>
                         </div>
@@ -240,7 +354,6 @@
                     <article class="property-card">
                         <div class="property-photo">
                             <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Đống Đa">
-                            <span class="property-badge">Gần trường đại học</span>
                             <button class="property-heart" aria-label="Lưu yêu thích">♡</button>
                             <div class="property-dots"><span></span><span></span><span></span></div>
                         </div>
@@ -251,21 +364,14 @@
                         </div>
                     </article>
 
-                    <article class="property-card faded">
-                        <div class="property-photo">
-                            <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=700&q=85" alt="Phòng trọ Hà Đông">
-                            <span class="property-badge">Lựa chọn mới</span>
-                            <button class="property-heart" aria-label="Lưu yêu thích">♡</button>
-                            <div class="property-dots"><span></span><span></span><span></span></div>
-                        </div>
-                        <div class="property-info">
-                            <h3>Studio gần tuyến Metro Hà Đông</h3>
-                            <p>Hà Đông, Hà Nội</p>
-                            <div class="property-price">Từ <strong>4.1 triệu</strong> / tháng</div>
-                        </div>
+                    <article class="property-see-all-card">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=85" alt="Xem tất cả phòng trọ Cầu Giấy">
+                        <a href="rooms.html?location=Cầu%20Giấy">
+                            <span>See All</span>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                        </a>
                     </article>
                 </div>
-                <a class="property-next" href="rooms.html" aria-label="Xem thêm phòng">›</a>
             </div>
         </div>
     </section>
