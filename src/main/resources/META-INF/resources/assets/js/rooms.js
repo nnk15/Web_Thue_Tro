@@ -352,7 +352,7 @@
                         <strong>${formatMoney(room.price)}</strong>
                         <small>/ tháng</small>
                     </div>
-                    <a class="listing-info-btn" href="room-detail.html?id=${room.id}">Hỏi thông tin</a>
+                    <a class="listing-info-btn" href="room-detail.html?id=${room.id}">Chi tiết</a>
                 </aside>
             </article>
         `;

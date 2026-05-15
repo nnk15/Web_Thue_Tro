@@ -414,6 +414,7 @@
                         fullName: field(form, "fullName").value.trim(),
                         email: field(form, "email").value.trim(),
                         phone: field(form, "phone").value.trim(),
+                        citizenId: field(form, "citizenId").value.trim(),
                         password: field(form, "password").value,
                         confirmPassword: field(form, "confirmPassword").value,
                         role: field(form, "role").value
@@ -446,6 +447,7 @@
         const fullName = user.fullName || "";
         const email = user.email || "";
         const phone = user.phone || "";
+        const citizenId = user.citizenId || "";
         const emailName = email.split("@")[0] || "";
         const fallbackId = (fullName || emailName || phone || "user")
             .toString()
@@ -462,10 +464,11 @@
         };
 
         setText("[data-profile-id]", profileId);
-        setText("[data-profile-email]", email || "Not set");
-        setText("[data-profile-phone]", phone || "Not set");
-        setText("[data-profile-role]", roleLabels[user.role] || user.role || "User");
-        setText("[data-profile-name]", fullName || "Not set");
+        setText("[data-profile-email]", email || "Chưa cập nhật");
+        setText("[data-profile-phone]", phone || "Chưa cập nhật");
+        setText("[data-profile-citizen-id]", citizenId || "Chưa cập nhật");
+        setText("[data-profile-role]", roleLabels[user.role] || user.role || "Người dùng");
+        setText("[data-profile-name]", fullName || "Chưa cập nhật");
 
         const emailLink = document.querySelector("[data-profile-email-link]");
         if (emailLink) {
@@ -490,11 +493,13 @@
         if (values[0]) values[0].textContent = fullName;
         if (values[1]) values[1].textContent = email;
         if (values[2]) values[2].textContent = phone;
-        if (values[3]) values[3].textContent = user.role;
+        if (values[3]) values[3].textContent = citizenId;
+        if (values[4]) values[4].textContent = user.role;
 
         if (document.querySelector("#fullName")) document.querySelector("#fullName").value = fullName;
         if (document.querySelector("#email")) document.querySelector("#email").value = email;
         if (document.querySelector("#phone")) document.querySelector("#phone").value = phone;
+        if (document.querySelector("#citizenId")) document.querySelector("#citizenId").value = citizenId;
         if (document.querySelector("#avatar")) document.querySelector("#avatar").value = user.avatar || "";
     }
 
@@ -522,7 +527,7 @@
                     <div class="dashboard-top landlord-profile-top">
                         <div>
                             <h1>Tài khoản chủ trọ</h1>
-                            <p>Thông tin đăng nhập và bảo mật tài khoản.</p>
+                            <p>Thông tin đăng nhập, CCCD và bảo mật tài khoản.</p>
                         </div>
                         <a class="btn btn-outline" href="landlord-dashboard.html">Quay lại quản lý phòng</a>
                     </div>
@@ -536,8 +541,8 @@
                                 </svg>
                             </div>
                             <div class="profile-identity-text">
-                                <strong data-profile-name>loading</strong>
-                                <span data-profile-email>loading</span>
+                                <strong data-profile-name>Đang tải</strong>
+                                <span data-profile-email>Đang tải</span>
                             </div>
                         </div>
 
@@ -551,8 +556,8 @@
                                     <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
                                 </span>
                                 <span class="settings-row-content">
-                                    <strong>Full name</strong>
-                                    <span data-profile-name>loading</span>
+                                    <strong>Họ và tên</strong>
+                                    <span data-profile-name>Đang tải</span>
                                 </span>
                                 <span class="settings-arrow" aria-hidden="true">&rarr;</span>
                             </a>
@@ -563,7 +568,7 @@
                                 </span>
                                 <span class="settings-row-content">
                                     <strong>Email</strong>
-                                    <span data-profile-email>loading</span>
+                                    <span data-profile-email>Đang tải</span>
                                 </span>
                                 <span class="settings-arrow" aria-hidden="true">&rarr;</span>
                             </a>
@@ -573,8 +578,19 @@
                                     <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6.1 6.1l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
                                 </span>
                                 <span class="settings-row-content">
-                                    <strong>Phone Number</strong>
-                                    <span data-profile-phone>Not set</span>
+                                    <strong>Số điện thoại</strong>
+                                    <span data-profile-phone>Chưa cập nhật</span>
+                                </span>
+                                <span class="settings-arrow" aria-hidden="true">&rarr;</span>
+                            </a>
+
+                            <a class="settings-row" href="#account-details">
+                                <span class="settings-row-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h4"/><path d="M8 13h8"/><path d="M8 17h6"/></svg>
+                                </span>
+                                <span class="settings-row-content">
+                                    <strong>CCCD</strong>
+                                    <span data-profile-citizen-id>Chưa cập nhật</span>
                                 </span>
                                 <span class="settings-arrow" aria-hidden="true">&rarr;</span>
                             </a>
@@ -584,7 +600,7 @@
                                     <svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 8-8"/><path d="m15 8 2 2 3-3-2-2"/></svg>
                                 </span>
                                 <span class="settings-row-content">
-                                    <strong>Password</strong>
+                                    <strong>Mật khẩu</strong>
                                     <span>********</span>
                                 </span>
                                 <span class="settings-arrow" aria-hidden="true">&rarr;</span>
@@ -659,6 +675,7 @@
                         fullName: field(profileForm, "fullName").value.trim(),
                         email: field(profileForm, "email").value.trim(),
                         phone: field(profileForm, "phone")?.value.trim() || currentUser()?.phone || "",
+                        citizenId: field(profileForm, "citizenId")?.value.trim() || currentUser()?.citizenId || "",
                         avatar: field(profileForm, "avatar")?.value.trim() || currentUser()?.avatar || ""
                     })
                 });

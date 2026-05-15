@@ -38,17 +38,30 @@ public class AuthService {
         if (userRepository.existsByPhone(request.phone())) {
             throw new WebApplicationException("Số điện thoại đã được sử dụng", Response.Status.CONFLICT);
         }
+        String citizenId = normalizeCitizenId(request.citizenId());
+        if (userRepository.existsByCitizenId(citizenId)) {
+            throw new WebApplicationException("Số CCCD đã được sử dụng", Response.Status.CONFLICT);
+        }
 
         User user = new User();
         user.fullName = request.fullName().trim();
         user.email = request.email().trim().toLowerCase();
         user.phone = request.phone().trim();
+        user.citizenId = citizenId;
         user.password = BcryptUtil.bcryptHash(request.password());
         user.role = role;
         user.status = UserStatus.ACTIVE;
         userRepository.persist(user);
 
         return new AuthDtos.AuthResponse(jwtService.createToken(user), UserDtos.UserResponse.from(user));
+    }
+
+    private String normalizeCitizenId(String citizenId) {
+        String normalized = citizenId == null ? "" : citizenId.trim();
+        if (!normalized.matches("\\d{9}|\\d{12}")) {
+            throw new WebApplicationException("CCCD phải gồm 9 hoặc 12 chữ số", Response.Status.BAD_REQUEST);
+        }
+        return normalized;
     }
 
     @Transactional

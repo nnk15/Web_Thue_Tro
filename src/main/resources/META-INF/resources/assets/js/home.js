@@ -139,7 +139,7 @@
             <article class="property-see-all-card">
                 <img src="${escapeAttribute(image)}" alt="Xem tất cả phòng trọ ${escapeAttribute(area)}">
                 <a href="rooms.html?${params.toString()}">
-                    <span>See All</span>
+                    <span>Xem tất cả</span>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
                 </a>
             </article>

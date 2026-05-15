@@ -15,6 +15,7 @@
             await syncFavoriteButton(room.id);
             bindActions(room);
             bindGallery();
+            loadRelatedRooms(room);
         } catch (error) {
             main.innerHTML = `
                 <section class="room-detail-page">
@@ -110,15 +111,15 @@
                             <div class="detail-tool-row">
                                 <a class="detail-tool-btn" href="#photos">
                                     ${icon("camera")}
-                                    Photos
+                                    Ảnh
                                 </a>
                                 <a class="detail-tool-btn" href="#videos">
                                     ${icon("play")}
-                                    Videos
+                                    Video
                                 </a>
                                 <a class="detail-tool-btn" href="#map">
                                     ${icon("map")}
-                                    Map View
+                                    Bản đồ
                                 </a>
                                 <div class="detail-summary-rating">
                                     ${ratingHtml(rating, reviewCount)}
@@ -205,6 +206,17 @@
                                 <iframe src="${mapUrl(room)}" loading="lazy" title="Bản đồ phòng trọ"></iframe>
                             </div>
                         </section>
+
+                        <section class="detail-block detail-related-section" data-related-section hidden>
+                            <div class="detail-related-head">
+                                <div>
+                                    <h2>Phòng trọ liên quan</h2>
+                                    <p>Các phòng cùng khu vực hoặc có mức giá tương tự để bạn so sánh nhanh.</p>
+                                </div>
+                                <a href="rooms.html?location=${encodeURIComponent(district)}">Xem tất cả</a>
+                            </div>
+                            <div class="detail-related-grid" data-related-rooms></div>
+                        </section>
                     </div>
 
                     <aside class="detail-side-column">
@@ -239,50 +251,165 @@
                     </aside>
                 </div>
 
-                <section class="detail-request-modal" data-rental-modal hidden>
-                    <div class="detail-request-card" role="dialog" aria-modal="true" aria-labelledby="rental-form-title">
-                        <div class="modal-head">
+                <section class="detail-request-modal booking-flow-modal" data-rental-modal hidden>
+                    <div class="detail-request-card booking-flow-card" role="dialog" aria-modal="true" aria-labelledby="rental-form-title">
+                        <div class="booking-flow-header">
                             <div>
-                                <h2 id="rental-form-title">Gửi yêu cầu thuê</h2>
-                                <p>${escapeHtml(room.title)}</p>
+                                <h2 id="rental-form-title" data-rental-heading>Cảm ơn ${escapeHtml(user?.fullName || "bạn")}, hãy giữ chỗ phòng này.</h2>
+                                <p data-rental-subtitle>Điền thông tin để gửi yêu cầu thuê phòng nhanh hơn.</p>
                             </div>
                             <button class="modal-close" type="button" data-close-rental-form aria-label="Đóng">&times;</button>
                         </div>
-                        <form class="form-grid detail-rental-form" data-rental-form>
+                        <div class="booking-stepper" data-rental-stepper>
+                            <span class="active" data-step="details">
+                                <strong>1</strong>
+                                <small>Bước 1</small>
+                                <b>Thông tin đặt thuê</b>
+                            </span>
+                            <i></i>
+                            <span data-step="payment">
+                                <strong>2</strong>
+                                <small>Bước 2</small>
+                                <b>Thanh toán</b>
+                            </span>
+                            <i></i>
+                            <span data-step="confirmation">
+                                <strong>3</strong>
+                                <small>Bước 3</small>
+                                <b>Xác nhận</b>
+                            </span>
+                        </div>
+                        <form class="booking-flow-form" data-rental-form>
                             <input type="hidden" name="roomId" value="${room.id}">
                             <div class="form-message" data-rental-message></div>
-                            <label class="form-field">
-                                <span>Họ tên</span>
-                                <input name="fullName" value="${escapeAttribute(user?.fullName || "")}" required>
-                            </label>
-                            <label class="form-field">
-                                <span>Số điện thoại</span>
-                                <input name="phone" value="${escapeAttribute(user?.phone || "")}" required>
-                            </label>
-                            <label class="form-field">
-                                <span>CCCD</span>
-                                <input name="citizenId" placeholder="012345678901" required>
-                            </label>
-                            <label class="form-field">
-                                <span>Ngày sinh</span>
-                                <input name="dateOfBirth" type="date">
-                            </label>
-                            <label class="form-field full">
-                                <span>Địa chỉ thường trú</span>
-                                <input name="permanentAddress" placeholder="Số nhà, phường/xã, quận/huyện, tỉnh/thành">
-                            </label>
-                            <label class="form-field full">
-                                <span>Thời gian muốn thuê</span>
-                                <input name="expectedRentalTime" placeholder="Ví dụ: Từ 01/06/2026, thuê tối thiểu 6 tháng" required>
-                            </label>
-                            <label class="form-field full">
-                                <span>Ghi chú</span>
-                                <textarea name="note" rows="3" placeholder="Nhu cầu thêm về hợp đồng, giờ nhận phòng..."></textarea>
-                            </label>
-                            <div class="modal-actions">
-                                <button class="btn btn-outline" type="button" data-close-rental-form>Hủy</button>
-                                <button class="btn btn-primary" type="submit">Gửi yêu cầu</button>
-                            </div>
+
+                            <section class="booking-page-card" data-booking-page="personal">
+                                <h3>Thông tin cá nhân</h3>
+                                <div class="booking-field-grid">
+                                    <label class="booking-field wide">
+                                        <span>Họ và tên</span>
+                                        <input name="fullName" value="${escapeAttribute(user?.fullName || "")}" required>
+                                    </label>
+                                    <label class="booking-field">
+                                        <span>CCCD</span>
+                                        <input name="citizenId" value="${escapeAttribute(user?.citizenId || "")}" placeholder="012345678901" required>
+                                    </label>
+                                    <label class="booking-field">
+                                        <span>Số điện thoại</span>
+                                        <input name="phone" value="${escapeAttribute(user?.phone || "")}" required>
+                                    </label>
+                                    <label class="booking-field wide">
+                                        <span>Email</span>
+                                        <input name="email" type="email" value="${escapeAttribute(user?.email || "")}" required>
+                                    </label>
+                                </div>
+                                <div class="modal-actions">
+                                    <button class="btn btn-outline" type="button" data-close-rental-form>Hủy</button>
+                                    <button class="btn btn-primary booking-primary" type="button" data-booking-next="accommodation">Tiếp tục</button>
+                                </div>
+                            </section>
+
+                            <section class="booking-page-card" data-booking-page="accommodation" hidden>
+                                <h3>Thông tin phòng thuê</h3>
+                                <div class="booking-field-grid">
+                                    <label class="booking-field">
+                                        <span>Loại phòng</span>
+                                        <input name="roomType" value="${escapeAttribute(room.furnitureType || room.title)}" required>
+                                    </label>
+                                    <label class="booking-field">
+                                        <span>Thời hạn thuê</span>
+                                        <input name="stayDuration" value="6 tháng" placeholder="Ví dụ: 6 tháng, 12 tháng" required>
+                                    </label>
+                                    <label class="booking-field wide">
+                                        <span>Ngày nhận phòng | Ngày trả phòng</span>
+                                        <input name="moveInOut" placeholder="Ví dụ: Nhận 01/06/2026 | Trả 01/12/2026" required>
+                                    </label>
+                                </div>
+                                <div class="booking-room-summary">
+                                    <div><span>Tên phòng</span><strong>${escapeHtml(room.title)}</strong></div>
+                                    <div><span>Địa chỉ</span><strong>${escapeHtml(room.address)}</strong></div>
+                                    <div><span>Diện tích</span><strong>${formatArea(room.area)}</strong></div>
+                                    <div class="highlight"><span>Giá thuê</span><strong>${formatMoney(room.price)}/tháng</strong></div>
+                                    <div class="highlight"><span>Tiền cọc</span><strong>${formatMoney(room.deposit)}</strong></div>
+                                    <div><span>Chủ trọ</span><strong>${escapeHtml(room.landlordName || "Chủ trọ")}</strong></div>
+                                    <div><span>CCCD chủ trọ</span><strong>${escapeHtml(room.landlordCitizenId || "Chưa cập nhật")}</strong></div>
+                                </div>
+                                <div class="modal-actions">
+                                    <button class="btn btn-outline" type="button" data-booking-prev="personal">Quay lại</button>
+                                    <button class="btn btn-primary booking-primary" type="button" data-booking-next="application">Tiếp tục</button>
+                                </div>
+                            </section>
+
+                            <section class="booking-page-card" data-booking-page="application" hidden>
+                                <h3>Thông tin bổ sung</h3>
+                                <div class="booking-field-grid">
+                                    <label class="booking-field">
+                                        <span>Ngày sinh</span>
+                                        <input name="dateOfBirth" type="date" required>
+                                    </label>
+                                    <div class="booking-gender-group">
+                                        <label><input type="radio" name="gender" value="Nam" required><span>Nam</span></label>
+                                        <label><input type="radio" name="gender" value="Nữ"><span>Nữ</span></label>
+                                        <label><input type="radio" name="gender" value="Khác"><span>Khác</span></label>
+                                    </div>
+                                    <label class="booking-field wide">
+                                        <span>Địa chỉ</span>
+                                        <input name="permanentAddress" placeholder="Số nhà, phường/xã, quận/huyện, tỉnh/thành" required>
+                                    </label>
+                                </div>
+                                <div class="modal-actions">
+                                    <button class="btn btn-outline" type="button" data-booking-prev="accommodation">Quay lại</button>
+                                    <button class="btn btn-primary booking-primary" type="button" data-booking-confirm-details>Xác nhận</button>
+                                </div>
+                            </section>
+
+                            <section class="booking-page-card payment-page-card" data-booking-page="payment" hidden>
+                                <h3>Thanh toán tiền cọc</h3>
+                                <div class="payment-layout">
+                                    <div class="payment-form-box">
+                                        <label class="booking-field">
+                                            <span>Số tiền cọc</span>
+                                            <input value="${formatMoney(room.deposit)}" readonly>
+                                        </label>
+                                        <label class="booking-field">
+                                            <span>Nội dung chuyển khoản</span>
+                                            <input data-payment-code value="COC PHONG ${room.id}" readonly>
+                                        </label>
+                                        <label class="booking-field">
+                                            <span>Người nhận</span>
+                                            <input value="${escapeAttribute(room.landlordName || "Chủ trọ")}" readonly>
+                                        </label>
+                                        <label class="booking-field">
+                                            <span>Quốc gia</span>
+                                            <input value="Việt Nam" readonly>
+                                        </label>
+                                    </div>
+                                    <div class="payment-checklist">
+                                        <div><span>✓</span> Chính sách hủy phòng rõ ràng</div>
+                                        <div><span>✓</span> Giá thuê và tiền cọc minh bạch</div>
+                                        <div><span>✓</span> Thanh toán an toàn</div>
+                                        <div><span>✓</span> Chủ trọ nhận yêu cầu sau khi xác nhận</div>
+                                    </div>
+                                </div>
+                                <div class="things-to-know">
+                                    <strong>Lưu ý</strong>
+                                    <p>Yêu cầu thuê chỉ được gửi sau khi bạn xác nhận đã chuyển tiền cọc.</p>
+                                </div>
+                                <div class="modal-actions">
+                                    <button class="btn btn-outline" type="button" data-booking-prev="application">Quay lại</button>
+                                    <button class="btn btn-primary booking-primary" type="button" data-rental-confirm-payment>Xác nhận đã chuyển tiền cọc</button>
+                                </div>
+                            </section>
+
+                            <section class="booking-page-card confirmation-page-card" data-booking-page="confirmation" hidden>
+                                <div class="booking-success-icon">✓</div>
+                                <h3>Yêu cầu thuê phòng thành công</h3>
+                                <p>Hệ thống đã gửi yêu cầu thuê phòng đến chủ trọ và tạo thông báo xác nhận cho bạn.</p>
+                                <div class="modal-actions">
+                                    <a class="btn btn-outline" href="profile-requests.html">Xem yêu cầu thuê</a>
+                                    <button class="btn btn-primary booking-primary" type="button" data-close-rental-form>Đóng</button>
+                                </div>
+                            </section>
                         </form>
                     </div>
                 </section>
@@ -323,6 +450,127 @@
                     </div>
                 </section>
             </section>
+        `;
+    }
+
+    async function loadRelatedRooms(room) {
+        const section = document.querySelector("[data-related-section]");
+        const grid = document.querySelector("[data-related-rooms]");
+        if (!section || !grid) {
+            return;
+        }
+
+        const district = districtFromAddress(room.address);
+        const currentId = Number(room.id);
+        const related = [];
+        const seenIds = new Set([currentId]);
+
+        const addRooms = (rooms) => {
+            (rooms || []).forEach((item) => {
+                const itemId = Number(item.id);
+                if (!itemId || seenIds.has(itemId)) {
+                    return;
+                }
+                seenIds.add(itemId);
+                related.push(item);
+            });
+        };
+
+        section.hidden = false;
+        grid.innerHTML = `<div class="detail-related-loading">Đang tải phòng trọ liên quan...</div>`;
+
+        try {
+            addRooms(await relatedRoomBatch({
+                location: district,
+                status: "AVAILABLE",
+                page: "0",
+                size: "6"
+            }));
+
+            if (related.length < 3) {
+                const price = Number(room.price || 0);
+                const priceParams = {
+                    status: "AVAILABLE",
+                    page: "0",
+                    size: "6"
+                };
+                if (price > 0) {
+                    priceParams.minPrice = String(Math.max(price - 1000000, 0));
+                    priceParams.maxPrice = String(price + 1000000);
+                }
+                addRooms(await relatedRoomBatch(priceParams));
+            }
+
+            if (related.length < 3) {
+                addRooms(await relatedRoomBatch({
+                    status: "AVAILABLE",
+                    page: "0",
+                    size: "6"
+                }));
+            }
+
+            if (!related.length) {
+                section.hidden = true;
+                return;
+            }
+
+            grid.innerHTML = related.slice(0, 3).map(relatedRoomCard).join("");
+        } catch {
+            section.hidden = true;
+        }
+    }
+
+    async function relatedRoomBatch(params) {
+        const query = new URLSearchParams(params);
+        const data = await publicJson(`/api/rooms?${query.toString()}`);
+        return data.rooms || [];
+    }
+
+    function relatedRoomCard(room) {
+        const image = room.imageUrls?.[0] || fallbackImage;
+        const statusText = room.status === "AVAILABLE" ? "Còn trống" : room.status === "RENTED" ? "Đã thuê" : "Đang ẩn";
+        const statusClass = room.status === "AVAILABLE" ? "badge-available" : "badge-rented";
+        const amenities = splitText(room.amenities, []).slice(0, 2);
+        const rating = Number(room.averageRating || 0);
+        const reviewCount = Number(room.reviewCount || 0);
+
+        return `
+            <article class="detail-related-card">
+                <a class="detail-related-media" href="room-detail.html?id=${room.id}">
+                    <img src="${escapeAttribute(image)}" alt="${escapeAttribute(room.title)}">
+                    <span class="badge ${statusClass}">${statusText}</span>
+                </a>
+                <div class="detail-related-body">
+                    <h3><a href="room-detail.html?id=${room.id}">${escapeHtml(room.title)}</a></h3>
+                    <p>${escapeHtml(room.address)}</p>
+                    <div class="detail-related-meta">
+                        <span>${formatArea(room.area)}</span>
+                        <span>${escapeHtml(room.furnitureType || "Đang cập nhật")}</span>
+                    </div>
+                    ${amenities.length ? `<div class="detail-related-tags">${amenities.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>` : ""}
+                    <div class="detail-related-bottom">
+                        <div>
+                            <span>Từ</span>
+                            <strong>${formatMoney(room.price)}</strong>
+                            <small>/ tháng</small>
+                        </div>
+                        ${relatedRatingHtml(rating, reviewCount)}
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    function relatedRatingHtml(rating, reviewCount) {
+        if (!reviewCount) {
+            return `<span class="detail-related-new">Mới</span>`;
+        }
+        const percent = Math.max(0, Math.min(100, (rating / 5) * 100));
+        return `
+            <span class="detail-related-rating">
+                <span>${rating.toFixed(1)}</span>
+                <span class="rating-stars" style="--rating-percent: ${percent}%">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </span>
         `;
     }
 
@@ -367,20 +615,31 @@
         const form = document.querySelector("[data-rental-form]");
         const openButton = document.querySelector("[data-open-rental-form]");
         const closeButtons = document.querySelectorAll("[data-close-rental-form]");
+        const bookingNextButtons = document.querySelectorAll("[data-booking-next]");
+        const bookingPrevButtons = document.querySelectorAll("[data-booking-prev]");
+        const confirmDetailsButton = document.querySelector("[data-booking-confirm-details]");
+        const confirmPaymentButton = document.querySelector("[data-rental-confirm-payment]");
         const appointmentModal = document.querySelector("[data-appointment-modal]");
         const appointmentForm = document.querySelector("[data-appointment-form]");
         const openAppointmentButton = document.querySelector("[data-open-appointment-form]");
         const closeAppointmentButtons = document.querySelectorAll("[data-close-appointment-form]");
+        let rentalDraft = null;
 
-        openButton?.addEventListener("click", () => {
+        openButton?.addEventListener("click", async () => {
             const auth = window.NhaTroAuth;
             const user = auth?.currentUser?.();
             if (!auth?.token?.() || user?.role !== "USER") {
                 window.location.href = `login.html?next=${encodeURIComponent(`room-detail.html?id=${room.id}`)}`;
                 return;
             }
+            clearRentalMessage();
+            rentalDraft = null;
+            setRentalStage("details");
+            setBookingPage("personal");
+            updateRentalHeader("details");
             modal.hidden = false;
             document.body.classList.add("modal-open");
+            await hydrateRentalProfile(form);
             form?.elements.fullName?.focus();
         });
 
@@ -416,25 +675,72 @@
             }
         });
 
-        form?.addEventListener("submit", async (event) => {
+        form?.addEventListener("submit", (event) => {
             event.preventDefault();
-            const submitButton = form.querySelector("button[type='submit']");
-            submitButton.disabled = true;
-            showRentalMessage("info", "Đang gửi yêu cầu thuê...");
+        });
+
+        bookingNextButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                clearRentalMessage();
+                const currentPage = visibleBookingPage();
+                if (!validateBookingPage(currentPage)) {
+                    return;
+                }
+                setBookingPage(button.dataset.bookingNext);
+            });
+        });
+
+        bookingPrevButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                clearRentalMessage();
+                const nextPage = button.dataset.bookingPrev;
+                setBookingPage(nextPage);
+                setRentalStage(nextPage === "payment" ? "payment" : "details");
+                updateRentalHeader(nextPage === "payment" ? "payment" : "details");
+            });
+        });
+
+        confirmDetailsButton?.addEventListener("click", () => {
+            clearRentalMessage();
+            const invalidPage = firstInvalidBookingPage(["personal", "accommodation", "application"]);
+            if (invalidPage) {
+                setBookingPage(invalidPage);
+                validateBookingPage(invalidPage);
+                return;
+            }
+            rentalDraft = collectRentalDraft(form, room);
+            updatePaymentCode(rentalDraft);
+            setRentalStage("payment");
+            updateRentalHeader("payment");
+            setBookingPage("payment");
+        });
+
+        confirmPaymentButton?.addEventListener("click", async () => {
+            if (!rentalDraft) {
+                showRentalMessage("error", "Vui lòng nhập thông tin yêu cầu thuê trước.");
+                setRentalStage("details");
+                updateRentalHeader("details");
+                setBookingPage("personal");
+                return;
+            }
+
+            confirmPaymentButton.disabled = true;
+            showRentalMessage("info", "Đang gửi yêu cầu thuê phòng...");
 
             try {
                 await window.NhaTroAuth.api("/api/rental-requests", {
                     method: "POST",
-                    body: JSON.stringify(rentalPayload(form))
+                    body: JSON.stringify(rentalPayload(rentalDraft))
                 });
-                showRentalMessage("success", "Đã gửi yêu cầu thuê. Trạng thái hiện tại là chờ xác nhận.");
-                setTimeout(() => {
-                    window.location.href = "profile-requests.html";
-                }, 900);
+                showRentalMessage("success", "Yêu cầu thuê phòng thành công. Hệ thống đã gửi thông báo xác nhận.");
+                window.NhaTroAuth?.refreshNotificationIndicators?.();
+                setRentalStage("confirmation");
+                updateRentalHeader("confirmation");
+                setBookingPage("confirmation");
             } catch (error) {
                 showRentalMessage("error", error.message);
             } finally {
-                submitButton.disabled = false;
+                confirmPaymentButton.disabled = false;
             }
         });
 
@@ -469,6 +775,103 @@
         document.body.classList.remove("modal-open");
     }
 
+    function setRentalStage(stage) {
+        const order = ["details", "payment", "confirmation"];
+        const activeIndex = order.indexOf(stage);
+        document.querySelectorAll("[data-rental-stepper] [data-step]").forEach((item) => {
+            const itemIndex = order.indexOf(item.dataset.step);
+            item.classList.toggle("active", item.dataset.step === stage);
+            item.classList.toggle("done", itemIndex > -1 && itemIndex < activeIndex);
+        });
+    }
+
+    function setBookingPage(page) {
+        document.querySelectorAll("[data-booking-page]").forEach((panel) => {
+            panel.hidden = panel.dataset.bookingPage !== page;
+        });
+    }
+
+    function visibleBookingPage() {
+        const panel = document.querySelector("[data-booking-page]:not([hidden])");
+        return panel?.dataset.bookingPage || "personal";
+    }
+
+    function firstInvalidBookingPage(pages) {
+        return pages.find((page) => !bookingPageIsValid(page));
+    }
+
+    function validateBookingPage(page) {
+        const panel = document.querySelector(`[data-booking-page="${page}"]`);
+        if (!panel) {
+            return true;
+        }
+        const controls = bookingPageControls(panel);
+        const invalidControl = controls.find((control) => !control.checkValidity());
+        if (invalidControl) {
+            invalidControl.reportValidity();
+            return false;
+        }
+        return true;
+    }
+
+    function bookingPageIsValid(page) {
+        const panel = document.querySelector(`[data-booking-page="${page}"]`);
+        if (!panel) {
+            return true;
+        }
+        return bookingPageControls(panel).every((control) => control.checkValidity());
+    }
+
+    function bookingPageControls(panel) {
+        return Array.from(panel.querySelectorAll("input, select, textarea"))
+            .filter((control) => !control.disabled && control.type !== "hidden");
+    }
+
+    async function hydrateRentalProfile(form) {
+        try {
+            const user = await window.NhaTroAuth.api("/api/users/profile");
+            fillFormValue(form, "fullName", user.fullName);
+            fillFormValue(form, "phone", user.phone);
+            fillFormValue(form, "email", user.email);
+            fillFormValue(form, "citizenId", user.citizenId);
+            updateRentalHeader("details", user);
+        } catch {
+            // Keep the cached values already rendered in the form.
+        }
+    }
+
+    function fillFormValue(form, name, value) {
+        if (form?.elements?.[name] && value) {
+            form.elements[name].value = value;
+        }
+    }
+
+    function updateRentalHeader(stage, userOverride = null) {
+        const name = userOverride?.fullName || window.NhaTroAuth?.currentUser?.()?.fullName || "bạn";
+        const heading = document.querySelector("[data-rental-heading]");
+        const subtitle = document.querySelector("[data-rental-subtitle]");
+        const copy = {
+            details: {
+                heading: `Cảm ơn ${name}, hãy giữ chỗ phòng này.`,
+                subtitle: "Điền thông tin để gửi yêu cầu thuê phòng nhanh hơn."
+            },
+            payment: {
+                heading: `Chào ${name}, gần hoàn tất! Bước cuối.`,
+                subtitle: "Xác nhận chuyển tiền cọc để chủ trọ nhận được yêu cầu thuê."
+            },
+            confirmation: {
+                heading: "Yêu cầu thuê phòng đã được gửi",
+                subtitle: "Bạn có thể theo dõi trạng thái trong mục yêu cầu thuê phòng."
+            }
+        }[stage];
+        if (heading && copy) {
+            heading.textContent = copy.heading;
+        }
+        if (subtitle && copy) {
+            subtitle.textContent = copy.subtitle;
+        }
+    }
+
     function closeAppointmentModal() {
         const modal = document.querySelector("[data-appointment-modal]");
         if (modal) {
@@ -477,17 +880,65 @@
         document.body.classList.remove("modal-open");
     }
 
-    function rentalPayload(form) {
+    function collectRentalDraft(form, room) {
         const data = new FormData(form);
+        const stayDuration = String(data.get("stayDuration") || "").trim();
+        const moveInOut = String(data.get("moveInOut") || "").trim();
         return {
-            roomId: Number(data.get("roomId")),
+            room: {
+                id: room.id,
+                title: room.title,
+                address: room.address,
+                area: room.area,
+                price: room.price,
+                deposit: room.deposit,
+                landlordName: room.landlordName || "Chủ trọ",
+                landlordCitizenId: room.landlordCitizenId || "Chưa cập nhật",
+                landlordPhone: room.landlordPhone || "Chưa cập nhật"
+            },
             fullName: String(data.get("fullName") || "").trim(),
             phone: String(data.get("phone") || "").trim(),
             citizenId: String(data.get("citizenId") || "").trim(),
+            gender: String(data.get("gender") || "").trim(),
+            email: String(data.get("email") || "").trim(),
+            roomType: String(data.get("roomType") || "").trim(),
+            stayDuration,
+            moveInOut,
             dateOfBirth: data.get("dateOfBirth") || null,
             permanentAddress: String(data.get("permanentAddress") || "").trim(),
-            expectedRentalTime: String(data.get("expectedRentalTime") || "").trim(),
-            note: String(data.get("note") || "").trim()
+            expectedRentalTime: [stayDuration, moveInOut].filter(Boolean).join(" | ")
+        };
+    }
+
+    function updatePaymentCode(draft) {
+        const paymentCode = document.querySelector("[data-payment-code]");
+        if (paymentCode) {
+            paymentCode.value = `COC PHONG ${draft.room.id} ${draft.phone}`;
+        }
+    }
+
+    function rentalPayload(draft) {
+        const note = [
+            `Email người thuê: ${draft.email}`,
+            `Giới tính: ${draft.gender}`,
+            `Loại phòng: ${draft.roomType}`,
+            `Thời hạn thuê: ${draft.stayDuration}`,
+            `Ngày nhận/trả phòng: ${draft.moveInOut}`,
+            `Đã xác nhận chuyển tiền cọc: ${formatMoney(draft.room.deposit)}`,
+            `Mã chuyển khoản: COC PHONG ${draft.room.id} ${draft.phone}`,
+            `Chủ trọ: ${draft.room.landlordName}`,
+            `CCCD chủ trọ: ${draft.room.landlordCitizenId}`
+        ].filter(Boolean).join("\n");
+
+        return {
+            roomId: Number(draft.room.id),
+            fullName: draft.fullName,
+            phone: draft.phone,
+            citizenId: draft.citizenId,
+            dateOfBirth: draft.dateOfBirth,
+            permanentAddress: draft.permanentAddress,
+            expectedRentalTime: draft.expectedRentalTime,
+            note
         };
     }
 
@@ -509,6 +960,15 @@
         }
         box.className = `form-message ${type}`;
         box.textContent = message;
+    }
+
+    function clearRentalMessage() {
+        const box = document.querySelector("[data-rental-message]");
+        if (!box) {
+            return;
+        }
+        box.className = "form-message";
+        box.textContent = "";
     }
 
     function showAppointmentMessage(type, message) {

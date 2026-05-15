@@ -1,7 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-
 :root {
+    --font-sans: "Segoe UI", Arial, Helvetica, sans-serif;
     --primary: #0f766e;
     --primary-dark: #075985;
     --primary-soft: #e0f2fe;
@@ -30,7 +28,7 @@ html {
 
 body {
     margin: 0;
-    font-family: "Montserrat", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     background: var(--bg);
     line-height: 1.5;
@@ -100,20 +98,15 @@ textarea {
 }
 
 .brand-logo-img {
-    width: 154px;
+    width: 172px;
     height: auto;
-    max-height: 58px;
+    max-height: 52px;
     object-fit: contain;
     border-radius: 4px;
 }
 
 .site-header .brand-logo-img {
-    width: 148px;
-}
-
-.site-header:not(.home-header) .brand-logo-img,
-.auth-card .brand-logo-img {
-    filter: brightness(0);
+    width: 166px;
 }
 
 .site-header .profile-logo-img {
@@ -122,8 +115,8 @@ textarea {
 }
 
 .sidebar .brand-logo-img {
-    width: 180px;
-    max-height: 72px;
+    width: 190px;
+    max-height: 54px;
 }
 
 .auth-card .logo {
@@ -547,11 +540,10 @@ textarea {
 }
 
 .footer-logo img {
-    width: 126px;
-    max-height: 64px;
+    width: 154px;
+    max-height: 46px;
     object-fit: contain;
     object-position: left center;
-    filter: brightness(0);
 }
 
 .footer-contact-pill {
@@ -840,10 +832,6 @@ textarea {
     display: flex;
     gap: 12px;
     align-items: center;
-}
-
-.landlord-card .avatar {
-    filter: brightness(0);
 }
 
 .avatar,
@@ -1157,14 +1145,22 @@ textarea {
 
 .detail-title-row h1 {
     margin: 10px 0 4px;
-    color: #111827;
-    font-size: 28px;
-    line-height: 1.18;
+    font-family: var(--font-sans);
+    font-style: normal;
+    font-weight: 700;
+    color: rgb(17, 25, 40);
+    font-size: 24px;
+    line-height: 34px;
 }
 
 .detail-title-row p {
     margin: 0;
-    color: #344054;
+    font-family: var(--font-sans);
+    font-style: normal;
+    font-weight: 400;
+    color: rgb(55, 65, 81);
+    font-size: 14px;
+    line-height: 21px;
 }
 
 .detail-price-box {
@@ -1422,6 +1418,210 @@ textarea {
     line-height: 1.55;
 }
 
+.detail-related-section {
+    overflow: hidden;
+}
+
+.detail-related-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.detail-related-head h2 {
+    margin: 0 0 6px;
+    color: rgb(17, 25, 40);
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 700;
+}
+
+.detail-related-head p {
+    margin: 0;
+    color: rgb(75, 85, 99);
+    font-size: 14px;
+    line-height: 21px;
+}
+
+.detail-related-head a {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    border: 1px solid #ff3f6c;
+    border-radius: 999px;
+    color: #ff3f6c;
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.detail-related-head a:hover {
+    color: #ffffff;
+    background: #ff3f6c;
+}
+
+.detail-related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.detail-related-loading {
+    grid-column: 1 / -1;
+    padding: 28px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    color: rgb(75, 85, 99);
+    text-align: center;
+}
+
+.detail-related-card {
+    overflow: hidden;
+    border: 1px solid #dfe5ee;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+.detail-related-media {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #e5e7eb;
+}
+
+.detail-related-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.detail-related-card:hover .detail-related-media img {
+    transform: scale(1.04);
+}
+
+.detail-related-media .badge {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.detail-related-body {
+    padding: 13px 14px 15px;
+}
+
+.detail-related-body h3 {
+    margin: 0 0 6px;
+    color: rgb(17, 25, 40);
+    font-size: 16px;
+    line-height: 21px;
+    font-weight: 700;
+}
+
+.detail-related-body h3 a:hover {
+    color: var(--search-action);
+}
+
+.detail-related-body p {
+    min-height: 36px;
+    margin: 0 0 10px;
+    color: rgb(55, 65, 81);
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 400;
+}
+
+.detail-related-meta,
+.detail-related-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 10px;
+}
+
+.detail-related-meta span,
+.detail-related-tags span {
+    min-height: 26px;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border: 1px solid #dbe3ef;
+    border-radius: 999px;
+    color: rgb(55, 65, 81);
+    background: #f8fafc;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+}
+
+.detail-related-tags span:first-child {
+    color: #2563eb;
+    border-color: #bfdbfe;
+    background: #eff6ff;
+}
+
+.detail-related-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eef2f7;
+}
+
+.detail-related-bottom > div > span {
+    display: block;
+    color: rgb(75, 85, 99);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.detail-related-bottom strong {
+    color: rgb(17, 25, 40);
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.detail-related-bottom small {
+    color: rgb(17, 25, 40);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.detail-related-rating,
+.detail-related-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: rgb(17, 25, 40);
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.detail-related-rating .rating-stars {
+    font-size: 12px;
+}
+
+.detail-related-new {
+    padding: 5px 9px;
+    border-radius: 999px;
+    color: #047857;
+    background: #d1fae5;
+}
+
 .modal-open {
     overflow: hidden;
 }
@@ -1446,10 +1646,502 @@ textarea {
     box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
 }
 
+.rental-flow-card {
+    width: min(920px, 100%);
+}
+
 .detail-request-card .modal-head p {
     margin: 4px 0 0;
     color: #667085;
     font-size: 13px;
+}
+
+.booking-flow-card {
+    width: min(960px, 100%);
+    max-height: min(92vh, 820px);
+    padding: 0;
+    border-radius: 8px;
+}
+
+.booking-flow-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 26px 34px;
+    border-bottom: 1px solid var(--line);
+}
+
+.booking-flow-header h2 {
+    margin: 0;
+    color: rgb(17, 25, 40);
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 700;
+}
+
+.booking-flow-header p {
+    margin: 6px 0 0;
+    color: rgb(75, 85, 99);
+    font-size: 14px;
+    line-height: 21px;
+    font-weight: 400;
+}
+
+.booking-stepper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 160px minmax(0, 1fr) 160px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    padding: 18px 34px;
+    border-bottom: 1px solid var(--line);
+    background: #f8fafc;
+}
+
+.booking-stepper span {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    grid-template-areas: "icon small" "icon label";
+    align-items: center;
+    column-gap: 12px;
+    color: #0f172a;
+}
+
+.booking-stepper strong {
+    grid-area: icon;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #64748b;
+    background: #eef2f7;
+    font-size: 0;
+    font-weight: 800;
+    position: relative;
+}
+
+.booking-stepper strong::before {
+    content: attr(data-icon);
+}
+
+.booking-stepper span:nth-of-type(1) strong::before {
+    content: "\25A4";
+    font-size: 21px;
+}
+
+.booking-stepper span:nth-of-type(2) strong::before {
+    content: "\25AD";
+    font-size: 22px;
+}
+
+.booking-stepper span:nth-of-type(3) strong::before {
+    content: "\2713";
+    font-size: 20px;
+}
+
+.booking-stepper small {
+    grid-area: small;
+    color: #475569;
+    font-size: 12px;
+    line-height: 16px;
+    text-transform: uppercase;
+}
+
+.booking-stepper b {
+    grid-area: label;
+    color: #020617;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 700;
+}
+
+.booking-stepper i {
+    height: 4px;
+    border-radius: 999px;
+    background: #d1d5db;
+}
+
+.booking-stepper span.active strong,
+.booking-stepper span.done strong {
+    color: #047857;
+    background: #d1fae5;
+}
+
+.booking-stepper span.done strong {
+    color: #ffffff;
+    background: #059669;
+}
+
+.booking-stepper span.done + i {
+    background: #059669;
+}
+
+.booking-flow-form {
+    display: block;
+    padding: 18px;
+    background: #f8fafc;
+}
+
+.booking-page-card {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.booking-page-card h3 {
+    margin: 0 0 18px;
+    color: rgb(17, 25, 40);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+}
+
+.booking-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 16px;
+}
+
+.booking-field.wide {
+    grid-column: 1 / -1;
+}
+
+.booking-field {
+    position: relative;
+    display: grid;
+}
+
+.booking-field span {
+    width: fit-content;
+    margin: 0 0 -9px 12px;
+    padding: 0 6px;
+    color: #475569;
+    background: #ffffff;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+}
+
+.booking-field input,
+.booking-field select,
+.booking-field textarea {
+    min-height: 50px;
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    color: #020617;
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 21px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-field input:focus,
+.booking-field select:focus,
+.booking-field textarea:focus {
+    border-color: #f43f5e;
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.12);
+}
+
+.booking-field input[readonly] {
+    color: #475569;
+    background: #f8fafc;
+}
+
+.booking-primary {
+    min-width: 150px;
+    background: #ef3f6f;
+    border-color: #ef3f6f;
+}
+
+.booking-primary:hover {
+    background: #e11d48;
+    border-color: #e11d48;
+}
+
+.booking-room-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.booking-room-summary div,
+.payment-checklist div,
+.things-to-know {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.booking-room-summary div {
+    padding: 12px;
+}
+
+.booking-room-summary span {
+    display: block;
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+}
+
+.booking-room-summary strong {
+    color: rgb(17, 25, 40);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 700;
+}
+
+.booking-room-summary .highlight {
+    border-color: #fecdd3;
+    background: #fff1f2;
+}
+
+.booking-room-summary .highlight strong {
+    color: #e11d48;
+    font-size: 16px;
+}
+
+.booking-gender-group {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.booking-gender-group label {
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    color: #020617;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.booking-gender-group label + label {
+    border-left: 1px solid #cbd5e1;
+}
+
+.booking-gender-group input {
+    width: 20px;
+    height: 20px;
+    accent-color: #ef3f6f;
+}
+
+.payment-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    gap: 22px;
+}
+
+.payment-form-box {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.payment-form-box .booking-field:first-child,
+.payment-form-box .booking-field:nth-child(2),
+.payment-form-box .booking-field:nth-child(3),
+.payment-form-box .booking-field:nth-child(4) {
+    grid-column: 1 / -1;
+}
+
+.payment-checklist {
+    display: grid;
+    gap: 16px;
+}
+
+.payment-checklist div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 14px;
+    color: #0f172a;
+    font-size: 13px;
+    line-height: 18px;
+    background: #f0fdf4;
+}
+
+.payment-checklist span {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    color: #059669;
+    border: 1px solid #10b981;
+    font-size: 12px;
+}
+
+.things-to-know {
+    margin-top: 20px;
+    padding: 16px;
+    background: #ffffff;
+}
+
+.things-to-know strong {
+    color: rgb(17, 25, 40);
+    font-size: 16px;
+}
+
+.things-to-know p {
+    margin: 8px 0 0;
+    color: #475569;
+    font-size: 13px;
+}
+
+.confirmation-page-card {
+    text-align: center;
+}
+
+.booking-success-icon {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    margin: 8px auto 16px;
+    border-radius: 50%;
+    color: #ffffff;
+    background: #059669;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.confirmation-page-card p {
+    max-width: 520px;
+    margin: 0 auto 20px;
+    color: #475569;
+}
+
+.rental-stepper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 0 18px;
+}
+
+.rental-stepper span {
+    min-height: 38px;
+    display: grid;
+    place-items: center;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: #667085;
+    background: #f8fafc;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.rental-stepper span.active {
+    color: var(--white);
+    border-color: var(--accent);
+    background: var(--accent);
+}
+
+.rental-flow-form {
+    display: block;
+}
+
+.rental-form-section {
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.rental-form-section h3,
+.rental-review-section h4 {
+    margin: 0 0 6px;
+    color: #111928;
+    font-size: 18px;
+}
+
+.rental-form-section p {
+    margin: 0 0 14px;
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.rental-form-grid,
+.rental-info-grid,
+.rental-review-grid,
+.rental-payment-box {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.rental-form-grid .full {
+    grid-column: 1 / -1;
+}
+
+.rental-info-card,
+.rental-review-grid div,
+.rental-payment-box div {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.rental-info-card span,
+.rental-review-grid span,
+.rental-payment-box span {
+    display: block;
+    margin-bottom: 5px;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.rental-info-card strong,
+.rental-review-grid strong,
+.rental-payment-box strong {
+    color: #111928;
+    line-height: 1.4;
+}
+
+.rental-info-card.highlight,
+.rental-review-grid .highlight,
+.rental-payment-box div:first-child {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.rental-info-card.highlight strong,
+.rental-review-grid .highlight strong,
+.rental-payment-box div:first-child strong {
+    color: var(--accent-dark);
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.rental-review-card {
+    display: grid;
+    gap: 16px;
+}
+
+.rental-step-panel .modal-actions {
+    margin-top: 16px;
 }
 
 .detail-rental-form,
@@ -1499,6 +2191,10 @@ textarea {
     .detail-side-column {
         position: static;
     }
+
+    .detail-related-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 720px) {
@@ -1543,6 +2239,54 @@ textarea {
     .detail-stats {
         grid-template-columns: 1fr;
     }
+
+    .detail-related-head {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .detail-related-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-request-modal {
+        padding: 12px;
+    }
+
+    .booking-flow-header,
+    .booking-stepper {
+        padding: 18px;
+    }
+
+    .booking-flow-header h2 {
+        font-size: 20px;
+        line-height: 26px;
+    }
+
+    .booking-stepper {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .booking-stepper i {
+        display: none;
+    }
+
+    .booking-field-grid,
+    .booking-room-summary,
+    .payment-layout,
+    .payment-form-box {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-gender-group {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-gender-group label + label {
+        border-left: 0;
+        border-top: 1px solid #cbd5e1;
+    }
 }
 
 .profile-layout {
@@ -1585,8 +2329,8 @@ textarea {
 }
 
 .account-sidebar .brand-logo-img {
-    width: 120px;
-    max-height: 48px;
+    width: 158px;
+    max-height: 44px;
 }
 
 .account-top-header {
@@ -2543,14 +3287,14 @@ th {
 }
 
 .home-logo .brand-logo-img {
-    width: 104px;
-    max-height: 44px;
+    width: 140px;
+    max-height: 40px;
     object-fit: contain;
 }
 
 .home-header.is-scrolled .home-logo .brand-logo-img {
-    width: 100px;
-    max-height: 40px;
+    width: 134px;
+    max-height: 38px;
 }
 
 .home-logo-black {
@@ -2563,7 +3307,6 @@ th {
 
 .home-header.is-scrolled .home-logo-black {
     display: block;
-    filter: brightness(0);
 }
 
 .home-header-search {
@@ -2654,8 +3397,9 @@ th {
 
 .home-action-link {
     gap: 8px;
-    font-size: 15px;
-    line-height: 1;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 500;
     white-space: nowrap;
 }
 
@@ -3017,8 +3761,11 @@ th {
 
 .home-search label {
     padding-left: 20px;
-    color: #4b5563;
+    color: rgb(75, 85, 99);
+    font-family: var(--font-sans);
     font-size: 18px;
+    font-weight: 400;
+    line-height: 27px;
     white-space: nowrap;
 }
 
@@ -3027,10 +3774,18 @@ th {
     min-height: 52px;
     border: 0;
     outline: 0;
-    color: #111827;
+    color: rgb(75, 85, 99);
     background: transparent;
+    font-family: var(--font-sans);
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 500;
+    line-height: 27px;
+}
+
+.home-search input::placeholder {
+    color: rgb(75, 85, 99);
+    font-weight: 500;
+    opacity: 1;
 }
 
 .home-search button {
@@ -3066,7 +3821,7 @@ th {
     background: #ffffff;
     box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16);
     color: rgb(75, 85, 99);
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     font-weight: 500;
     line-height: 21px;
@@ -3259,7 +4014,7 @@ th {
 .home-section-head h2 {
     margin: 0;
     color: rgb(17, 25, 40);
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     font-size: 24px;
     line-height: 30px;
     font-weight: 700;
@@ -3268,7 +4023,7 @@ th {
 .home-section-head p {
     margin: 8px 0 0;
     color: rgb(75, 85, 99);
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
@@ -3424,7 +4179,7 @@ th {
     z-index: 1;
     max-width: 100%;
     overflow: hidden;
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     font-size: 16px;
     font-weight: 700;
     line-height: 22px;
@@ -3495,21 +4250,64 @@ th {
 }
 
 .property-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
     margin-bottom: 26px;
 }
 
 .property-heading h2 {
     margin: 0 0 8px;
-    color: #0f172a;
-    font-size: 26px;
-    line-height: 1.2;
-    font-weight: 900;
+    color: rgb(17, 25, 40);
+    font-family: var(--font-sans);
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 700;
 }
 
 .property-heading p {
     margin: 0;
-    color: #475467;
+    color: rgb(75, 85, 99);
+    font-family: var(--font-sans);
     font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+}
+
+.property-view-all {
+    min-height: 42px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border: 1px solid #ff3f6c;
+    border-radius: 999px;
+    color: #ff3f6c;
+    background: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.property-view-all:hover {
+    color: #ffffff;
+    background: #ff3f6c;
+    box-shadow: 0 10px 24px rgba(255, 63, 108, 0.2);
+}
+
+.property-view-all svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .property-tabs-wrap {
@@ -3675,7 +4473,7 @@ button.property-chip {
     border-radius: 7px;
     color: rgb(237, 58, 86);
     background: #ffffff;
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     font-weight: 600;
     line-height: 14px;
@@ -3826,7 +4624,7 @@ button.property-chip {
 
 .property-info {
     padding: 13px 13px 16px;
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
 }
 
 .property-info h3 {
@@ -4036,7 +4834,7 @@ button.property-chip {
 
 .listing-page {
     background: #f5f6f8;
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
 }
 
 .listing-header {
@@ -4046,13 +4844,13 @@ button.property-chip {
     background: rgba(255, 255, 255, 0.98);
     border-bottom: 1px solid #e4e7ec;
     box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
-    font-family: "Montserrat", Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
 }
 
 .listing-header-inner {
     min-height: 64px;
     display: grid;
-    grid-template-columns: 120px minmax(280px, 560px) 1fr;
+    grid-template-columns: 152px minmax(280px, 560px) 1fr;
     align-items: center;
     gap: 22px;
     padding: 0 38px;
@@ -4064,10 +4862,9 @@ button.property-chip {
 }
 
 .listing-brand img {
-    width: 104px;
-    height: 54px;
+    width: 140px;
+    height: 44px;
     object-fit: contain;
-    filter: brightness(0);
 }
 
 .listing-search-form {
@@ -4085,9 +4882,17 @@ button.property-chip {
     min-width: 0;
     border: 0;
     outline: 0;
-    color: #344054;
+    color: rgb(17, 25, 40);
     background: transparent;
-    font-size: 14px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 18px;
+}
+
+.listing-search-form input::placeholder {
+    color: rgb(17, 25, 40);
+    opacity: 1;
 }
 
 .listing-search-form button {
@@ -4127,8 +4932,9 @@ button.property-chip {
     justify-content: flex-end;
     gap: 18px;
     color: #111827;
-    font-size: 14px;
-    font-weight: 800;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 500;
     white-space: nowrap;
 }
 
@@ -4137,6 +4943,13 @@ button.property-chip {
     display: inline-flex;
     align-items: center;
     gap: 7px;
+}
+
+.listing-action-link {
+    color: rgb(17, 25, 40);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 500;
 }
 
 .listing-chevron {
@@ -4192,10 +5005,11 @@ button.property-chip {
     padding: 0 16px;
     border: 1px solid #d5dbe5;
     border-radius: 999px;
-    color: #111827;
+    color: rgb(0, 0, 0);
     background: #ffffff;
-    font-size: 13px;
-    font-weight: 800;
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 500;
     cursor: pointer;
 }
 
@@ -4223,9 +5037,10 @@ select.filter-chip {
 }
 
 .clear-filter-link {
-    color: #98a2b3;
-    font-size: 13px;
-    font-weight: 800;
+    color: rgb(85, 85, 85);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
 }
 
 .listing-main {
@@ -4453,11 +5268,16 @@ select.filter-chip {
 
 .listing-room-title-row h2 {
     margin: 0 0 3px;
-    color: #111827;
-    font-family: "Inter", Arial, Helvetica, sans-serif;
-    font-size: 19px;
-    line-height: 1.32;
-    font-weight: 600;
+    color: rgb(17, 25, 40);
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+}
+
+.listing-room-title-row h2 a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .listing-room-title-row h2 a:hover {
@@ -4466,8 +5286,11 @@ select.filter-chip {
 
 .listing-room-title-row p {
     margin: 0;
-    color: #1f2937;
-    font-size: 13px;
+    color: rgb(17, 25, 40);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 15px;
+    font-weight: 400;
 }
 
 .listing-distance {
@@ -4476,9 +5299,11 @@ select.filter-chip {
     gap: 8px;
     align-items: center;
     margin-top: 12px;
-    color: #344054;
+    color: rgb(55, 65, 81);
+    font-family: var(--font-sans);
     font-size: 12px;
-    font-weight: 700;
+    line-height: 18px;
+    font-weight: 600;
 }
 
 .listing-distance span {
@@ -4521,8 +5346,8 @@ select.filter-chip {
 }
 
 .listing-room-price {
-    display: grid;
-    align-content: space-between;
+    display: flex;
+    flex-direction: column;
     gap: 14px;
     padding: 17px 16px 14px;
     border-left: 1px solid #e2e6ee;
@@ -4550,7 +5375,7 @@ select.filter-chip {
 }
 
 .rating-stars::before {
-    content: "★★★★★";
+    content: "\2605\2605\2605\2605\2605";
     position: absolute;
     inset: 0 auto 0 0;
     width: var(--rating-percent, 0%);
@@ -4585,17 +5410,22 @@ select.filter-chip {
     font-weight: 700;
 }
 
+.listing-price-block {
+    margin-top: auto;
+}
+
 .listing-price-block strong {
     display: inline;
-    color: #111827;
-    font-size: 22px;
-    line-height: 1.2;
-    font-weight: 900;
+    color: rgb(17, 25, 40);
+    font-family: var(--font-sans);
+    font-size: 20px;
+    line-height: 25px;
+    font-weight: 700;
 }
 
 .listing-price-block small {
-    color: #111827;
-    font-weight: 800;
+    color: rgb(17, 25, 40);
+    font-weight: 700;
 }
 
 .listing-info-btn {
@@ -4745,7 +5575,7 @@ select.filter-chip {
     }
 
     .listing-header-inner {
-        grid-template-columns: 96px minmax(240px, 1fr);
+        grid-template-columns: 132px minmax(240px, 1fr);
         padding: 0 20px;
     }
 
@@ -4957,6 +5787,19 @@ select.filter-chip {
         padding-right: 16px;
     }
 
+    .rental-stepper,
+    .rental-form-grid,
+    .rental-info-grid,
+    .rental-review-grid,
+    .rental-payment-box {
+        grid-template-columns: 1fr;
+    }
+
+    .rental-stepper span {
+        justify-content: start;
+        place-items: center start;
+    }
+
     .rented-room-card {
         grid-template-columns: 1fr;
     }
@@ -5017,14 +5860,14 @@ select.filter-chip {
     }
 
     .listing-header-inner {
-        grid-template-columns: 72px 1fr;
+        grid-template-columns: 112px 1fr;
         gap: 12px;
         padding: 8px 12px 0;
     }
 
     .listing-brand img {
-        width: 70px;
-        height: 46px;
+        width: 104px;
+        height: 34px;
     }
 
     .listing-search-form {
@@ -5149,6 +5992,16 @@ select.filter-chip {
 
     .property-heading h2 {
         font-size: 24px;
+    }
+
+    .property-heading {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .property-view-all {
+        width: fit-content;
     }
 
     .property-carousel {

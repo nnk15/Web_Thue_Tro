@@ -27,9 +27,16 @@ public class UserService {
         if (userRepository.existsByPhoneExceptId(request.phone(), user.id)) {
             throw new WebApplicationException("Số điện thoại đã được sử dụng", Response.Status.CONFLICT);
         }
+        if (request.citizenId() != null && !request.citizenId().isBlank()
+                && userRepository.existsByCitizenIdExceptId(request.citizenId(), user.id)) {
+            throw new WebApplicationException("Số CCCD đã được sử dụng", Response.Status.CONFLICT);
+        }
         user.fullName = request.fullName().trim();
         user.email = request.email().trim().toLowerCase();
         user.phone = request.phone().trim();
+        if (request.citizenId() != null && !request.citizenId().isBlank()) {
+            user.citizenId = request.citizenId().trim();
+        }
         user.avatar = request.avatar();
         return UserDtos.UserResponse.from(user);
     }

@@ -134,6 +134,7 @@ public class DataSeeder {
         user.fullName = fullName;
         user.email = email;
         user.phone = phone;
+        user.citizenId = citizenIdFromPhone(phone);
         user.password = passwordHash;
         user.avatar = avatar;
         user.role = role;
@@ -154,6 +155,7 @@ public class DataSeeder {
             user.fullName = LANDLORD_NAMES[i];
             user.email = email;
             user.phone = phone;
+            user.citizenId = citizenIdFromPhone(phone);
             user.password = passwordHash;
             user.avatar = "https://i.pravatar.cc/240?img=" + (20 + i);
             user.role = Role.LANDLORD;
@@ -163,6 +165,12 @@ public class DataSeeder {
 
         return userRepository.find("email like ?1 order by email", "%" + SEED_EMAIL_DOMAIN)
                 .list();
+    }
+
+    private String citizenIdFromPhone(String phone) {
+        String digits = phone == null ? "" : phone.replaceAll("\\D", "");
+        String suffix = digits.length() > 9 ? digits.substring(digits.length() - 9) : digits;
+        return "001" + "0".repeat(Math.max(0, 9 - suffix.length())) + suffix;
     }
 
     private void seedRooms(List<User> landlords) {

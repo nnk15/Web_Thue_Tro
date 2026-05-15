@@ -21,12 +21,20 @@ public class UserRepository implements PanacheRepository<User> {
         return count("phone = ?1", phone.trim()) > 0;
     }
 
+    public boolean existsByCitizenId(String citizenId) {
+        return count("citizenId = ?1", citizenId.trim()) > 0;
+    }
+
     public boolean existsByEmailExceptId(String email, Long id) {
         return count("lower(email) = ?1 and id <> ?2", email.trim().toLowerCase(), id) > 0;
     }
 
     public boolean existsByPhoneExceptId(String phone, Long id) {
         return count("phone = ?1 and id <> ?2", phone.trim(), id) > 0;
+    }
+
+    public boolean existsByCitizenIdExceptId(String citizenId, Long id) {
+        return count("citizenId = ?1 and id <> ?2", citizenId.trim(), id) > 0;
     }
 
     public long countByRole(Role role) {

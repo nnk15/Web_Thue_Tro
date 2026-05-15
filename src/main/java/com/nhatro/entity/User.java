@@ -29,6 +29,9 @@ public class User extends PanacheEntityBase {
     @Column(nullable = false, unique = true, length = 20)
     public String phone;
 
+    @Column(name = "citizen_id", nullable = false, unique = true, length = 30)
+    public String citizenId;
+
     @Column(nullable = false)
     public String password;
 

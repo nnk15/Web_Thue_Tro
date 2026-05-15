@@ -48,6 +48,7 @@ public class RentalRequestService {
         requestRepository.persist(rentalRequest);
 
         notificationService.create(room.landlord, "Có yêu cầu thuê phòng mới", tenant.fullName + " muốn thuê phòng: " + room.title);
+        notificationService.create(tenant, "Yêu cầu thuê phòng thành công", "Bạn đã gửi yêu cầu thuê phòng: " + room.title + ". Trạng thái hiện tại là chờ xác nhận.");
         return RentalRequestDtos.RentalRequestResponse.from(rentalRequest);
     }
 

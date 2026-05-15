@@ -54,7 +54,7 @@ public class AdminService {
 
         Map<String, Object> params = new HashMap<>();
         params.put("keyword", "%" + keyword.trim().toLowerCase() + "%");
-        return userRepository.find("lower(fullName) like :keyword or lower(email) like :keyword or phone like :keyword", Sort.by("createdAt").descending(), params)
+        return userRepository.find("lower(fullName) like :keyword or lower(email) like :keyword or phone like :keyword or citizenId like :keyword", Sort.by("createdAt").descending(), params)
                 .list()
                 .stream()
                 .map(UserDtos.UserResponse::from)

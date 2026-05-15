@@ -19,6 +19,7 @@
         setText("[data-profile-name]", user.fullName || "Chưa cập nhật");
         setText("[data-profile-email]", user.email || "Chưa cập nhật");
         setText("[data-profile-phone]", user.phone || "Chưa cập nhật");
+        setText("[data-profile-citizen-id]", user.citizenId || "Chưa cập nhật");
 
         const emailLink = document.querySelector("[data-profile-email-link]");
         if (emailLink && user.email) {

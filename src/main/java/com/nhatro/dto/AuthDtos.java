@@ -13,6 +13,7 @@ public final class AuthDtos {
             @NotBlank String fullName,
             @NotBlank @Email String email,
             @NotBlank String phone,
+            @NotBlank @Size(min = 9, max = 12) String citizenId,
             @NotBlank @Size(min = 6) String password,
             @NotBlank @Size(min = 6) String confirmPassword,
             Role role

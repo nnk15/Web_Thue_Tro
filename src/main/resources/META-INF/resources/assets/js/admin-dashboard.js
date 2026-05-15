@@ -61,7 +61,7 @@
 
     function setLoading() {
         if (usersBody) {
-            usersBody.innerHTML = emptyRow(6, "Đang tải người dùng...");
+            usersBody.innerHTML = emptyRow(7, "Đang tải người dùng...");
         }
         if (landlordsBody) {
             landlordsBody.innerHTML = emptyRow(5, "Đang tải chủ trọ...");
@@ -92,7 +92,7 @@
             return;
         }
         if (!users.length) {
-            usersBody.innerHTML = emptyRow(6, "Không tìm thấy người dùng.");
+            usersBody.innerHTML = emptyRow(7, "Không tìm thấy người dùng.");
             return;
         }
         usersBody.innerHTML = users.map((user) => `
@@ -100,6 +100,7 @@
                 <td>${escapeHtml(user.fullName)}</td>
                 <td>${escapeHtml(user.email)}</td>
                 <td>${escapeHtml(user.phone)}</td>
+                <td>${escapeHtml(user.citizenId || "Chưa cập nhật")}</td>
                 <td>${roleLabel(user.role)}</td>
                 <td>${userStatusBadge(user.status)}</td>
                 <td>

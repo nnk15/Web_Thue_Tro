@@ -214,8 +214,10 @@
                         ${detailItem("Diện tích", room?.area ? `${room.area} m²` : "Đang cập nhật")}
                         ${detailItem("Thời gian thuê", request.expectedRentalTime || "Chưa cập nhật")}
                         ${detailItem("Người thuê", request.fullName || currentUser?.fullName || "Chưa cập nhật")}
+                        ${detailItem("CCCD người thuê", request.citizenId || currentUser?.citizenId || "Chưa cập nhật")}
                         ${detailItem("Số điện thoại", request.phone || currentUser?.phone || "Chưa cập nhật")}
                         ${detailItem("Chủ trọ", room?.landlordName || "Đang cập nhật")}
+                        ${detailItem("CCCD chủ trọ", room?.landlordCitizenId || "Đang cập nhật")}
                         ${detailItem("Liên hệ chủ trọ", room?.landlordPhone || "Đang cập nhật")}
                     </dl>
                     ${amenities ? `<div class="amenities rented-room-amenities">${amenities}</div>` : ""}

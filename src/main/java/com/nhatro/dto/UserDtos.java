@@ -17,6 +17,7 @@ public final class UserDtos {
             String fullName,
             String email,
             String phone,
+            String citizenId,
             String avatar,
             Role role,
             UserStatus status,
@@ -29,6 +30,7 @@ public final class UserDtos {
                     user.fullName,
                     user.email,
                     user.phone,
+                    user.citizenId,
                     user.avatar,
                     user.role,
                     user.status,
@@ -42,6 +44,7 @@ public final class UserDtos {
             @NotBlank String fullName,
             @NotBlank @Email String email,
             @NotBlank String phone,
+            String citizenId,
             String avatar
     ) {
     }
