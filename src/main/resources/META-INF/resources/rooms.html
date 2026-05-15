@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách phòng trọ | One Room One Love</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body class="listing-page">
@@ -130,11 +131,28 @@
 
         <aside class="listing-map-sidebar" id="listing-support">
             <div class="listing-map-card">
-                <iframe src="https://www.google.com/maps?q=H%C3%A0%20N%E1%BB%99i&output=embed" loading="lazy" title="Bản đồ phòng trọ Hà Nội"></iframe>
-                <a class="map-explore-btn" href="rooms.html">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18 3 20V6l6-2 6 2 6-2v14l-6 2-6-2Z"/><path d="M9 4v14"/><path d="M15 6v14"/></svg>
-                    Khám phá trên bản đồ
-                </a>
+                <div id="roomsMap" class="listing-interactive-map" aria-label="Bản đồ phòng trọ Hà Nội"></div>
+                <div class="listing-map-controls">
+                    <div class="map-control-title">
+                        <strong>Tìm phòng theo bản đồ</strong>
+                        <span id="listingMapSummary">Đang tải vị trí phòng...</span>
+                    </div>
+                    <div class="map-quick-buttons" aria-label="Khu vực gợi ý">
+                        <button type="button" data-map-focus="university">Gần trường đại học</button>
+                        <button type="button" data-map-focus="office">Gần công ty</button>
+                        <button type="button" data-map-focus="industrial">Gần khu công nghiệp</button>
+                        <button type="button" data-map-focus="center">Gần trung tâm</button>
+                    </div>
+                    <label class="map-radius-row">
+                        <span>Bán kính xem nhanh</span>
+                        <select data-map-radius>
+                            <option value="2">2 km</option>
+                            <option value="5" selected>5 km</option>
+                            <option value="8">8 km</option>
+                            <option value="12">12 km</option>
+                        </select>
+                    </label>
+                </div>
             </div>
 
             <div class="listing-support-card">
@@ -179,6 +197,7 @@
 </main>
 
 <script src="assets/js/auth.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="assets/js/rooms.js"></script>
 </body>
 </html>

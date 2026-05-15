@@ -15,6 +15,7 @@
             await syncFavoriteButton(room.id);
             bindActions(room);
             bindGallery();
+            initDetailMap(room);
             loadRelatedRooms(room);
         } catch (error) {
             main.innerHTML = `
@@ -200,11 +201,50 @@
                             ${videoBlock(videos)}
                         </section>
 
-                        <section class="detail-block" id="map">
+                        <section class="detail-block detail-map-section" id="map">
                             <h2>Bản đồ vị trí</h2>
-                            <div class="map-frame">
+                            <div class="map-frame interactive-map-frame">
+                                <div id="detailMap" class="interactive-map" aria-label="Bản đồ vị trí phòng trọ"></div>
                                 <iframe src="${mapUrl(room)}" loading="lazy" title="Bản đồ phòng trọ"></iframe>
                             </div>
+                            <aside class="detail-map-info">
+                                <h3>${escapeHtml(district)}</h3>
+                                <dl>
+                                    <div>
+                                        <dt>Địa chỉ phòng</dt>
+                                        <dd>${escapeHtml(room.address)}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Tọa độ vị trí</dt>
+                                        <dd>${formatCoordinate(room.latitude)}, ${formatCoordinate(room.longitude)}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Khu vực xung quanh</dt>
+                                        <dd>${escapeHtml(nearbyAreaText(room, district))}</dd>
+                                    </div>
+                                </dl>
+                                <div class="map-nearby-tags">
+                                    ${nearbyTags(room, district).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
+                                </div>
+                                <div class="distance-tool">
+                                    <strong>Xem khoảng cách</strong>
+                                    <label>
+                                        <span>Từ</span>
+                                        <select data-distance-origin>
+                                            ${distanceOrigins().map((item) => `<option value="${escapeAttribute(item.key)}">${escapeHtml(item.label)}</option>`).join("")}
+                                        </select>
+                                    </label>
+                                    <label>
+                                        <span>Hoặc nhập tọa độ</span>
+                                        <input data-distance-custom placeholder="Ví dụ: 21.0379,105.7824">
+                                    </label>
+                                    <p data-distance-result>Chọn điểm bắt đầu để tính khoảng cách đến phòng.</p>
+                                    <div class="distance-actions">
+                                        <button type="button" data-calculate-distance>Tính khoảng cách</button>
+                                        <a href="${escapeAttribute(mapDirectionsUrl(room))}" target="_blank" rel="noopener" data-map-route>Mở chỉ đường</a>
+                                    </div>
+                                </div>
+                            </aside>
                         </section>
 
                         <section class="detail-block detail-related-section" data-related-section hidden>
@@ -1102,11 +1142,197 @@
         `;
     }
 
+    function initDetailMap(room) {
+        const mapNode = document.querySelector("#detailMap");
+        const point = roomPoint(room);
+        bindDetailDistanceTool(room, point);
+
+        if (!mapNode) {
+            return;
+        }
+
+        if (!point) {
+            mapNode.innerHTML = `
+                <div class="map-fallback">
+                    <strong>Phòng này chưa có tọa độ.</strong>
+                    <a href="${escapeAttribute(mapUrl(room))}" target="_blank" rel="noopener">Mở bản đồ theo địa chỉ</a>
+                </div>
+            `;
+            return;
+        }
+
+        if (!window.L) {
+            mapNode.innerHTML = `
+                <div class="map-fallback">
+                    <strong>Không tải được bản đồ tương tác.</strong>
+                    <a href="${escapeAttribute(mapUrl(room))}" target="_blank" rel="noopener">Mở Google Maps</a>
+                </div>
+            `;
+            return;
+        }
+
+        const map = L.map(mapNode, { scrollWheelZoom: false }).setView([point.lat, point.lng], 15);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap"
+        }).addTo(map);
+
+        L.marker([point.lat, point.lng])
+                .addTo(map)
+                .bindPopup(`
+                    <div class="map-popup">
+                        <strong>${escapeHtml(room.title)}</strong>
+                        <span>${escapeHtml(room.address)}</span>
+                        <b>${formatMoney(room.price)} / tháng</b>
+                    </div>
+                `)
+                .openPopup();
+
+        L.circle([point.lat, point.lng], {
+            radius: 900,
+            color: "#ef3f68",
+            weight: 2,
+            fillColor: "#ef3f68",
+            fillOpacity: 0.08
+        }).addTo(map);
+
+        distanceOrigins().forEach((origin) => {
+            L.circleMarker([origin.lat, origin.lng], {
+                radius: 6,
+                color: "#0ea5e9",
+                fillColor: "#0ea5e9",
+                fillOpacity: 0.85,
+                weight: 2
+            }).addTo(map).bindPopup(`<strong>${escapeHtml(origin.label)}</strong>`);
+        });
+
+        setTimeout(() => map.invalidateSize(), 80);
+    }
+
+    function bindDetailDistanceTool(room, roomLocation) {
+        const originSelect = document.querySelector("[data-distance-origin]");
+        const customInput = document.querySelector("[data-distance-custom]");
+        const result = document.querySelector("[data-distance-result]");
+        const route = document.querySelector("[data-map-route]");
+        const calculate = document.querySelector("[data-calculate-distance]");
+        if (!originSelect || !result || !calculate) {
+            return;
+        }
+
+        const update = () => {
+            if (!roomLocation) {
+                result.textContent = "Phòng này chưa có tọa độ nên chưa tính được khoảng cách.";
+                return;
+            }
+            const customPoint = parseLatLng(customInput?.value);
+            const origin = customPoint || distanceOrigins().find((item) => item.key === originSelect.value) || distanceOrigins()[0];
+            const distance = haversineKm(origin, roomLocation);
+            result.textContent = `Từ ${origin.label || "tọa độ đã nhập"} đến phòng khoảng ${formatDistance(distance)} theo đường thẳng.`;
+            if (route) {
+                route.href = mapDirectionsUrl(room, origin);
+            }
+        };
+
+        calculate.addEventListener("click", update);
+        originSelect.addEventListener("change", () => {
+            if (customInput) {
+                customInput.value = "";
+            }
+            update();
+        });
+        update();
+    }
+
+    function distanceOrigins() {
+        return [
+            { key: "center", label: "Trung tâm Hồ Gươm", lat: 21.0285, lng: 105.8542 },
+            { key: "university", label: "ĐHQG Hà Nội - Cầu Giấy", lat: 21.0379, lng: 105.7824 },
+            { key: "bk", label: "Đại học Bách Khoa Hà Nội", lat: 21.0058, lng: 105.8431 },
+            { key: "office", label: "Khu văn phòng Keangnam", lat: 21.0171, lng: 105.7847 },
+            { key: "industrial", label: "Khu công nghiệp Thăng Long", lat: 21.1398, lng: 105.7894 }
+        ];
+    }
+
+    function nearbyTags(room, district) {
+        const roomLocation = roomPoint(room);
+        const tags = [district, "Gần tuyến giao thông chính", "Khu dân cư tiện ích"];
+        if (roomLocation) {
+            const nearest = distanceOrigins()
+                    .map((origin) => ({ ...origin, distance: haversineKm(origin, roomLocation) }))
+                    .sort((left, right) => left.distance - right.distance)
+                    .slice(0, 2)
+                    .map((origin) => `${origin.label} - ${formatDistance(origin.distance)}`);
+            tags.push(...nearest);
+        }
+        return [...new Set(tags)].slice(0, 6);
+    }
+
+    function nearbyAreaText(room, district) {
+        const roomLocation = roomPoint(room);
+        if (!roomLocation) {
+            return `Khu vực ${district}, Hà Nội`;
+        }
+        const nearest = distanceOrigins()
+                .map((origin) => ({ ...origin, distance: haversineKm(origin, roomLocation) }))
+                .sort((left, right) => left.distance - right.distance)[0];
+        return `Khu vực ${district}, gần ${nearest.label} khoảng ${formatDistance(nearest.distance)}`;
+    }
+
+    function roomPoint(room) {
+        const lat = Number(room?.latitude);
+        const lng = Number(room?.longitude);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return null;
+        }
+        return { label: room.title || "Phòng trọ", lat, lng };
+    }
+
+    function parseLatLng(value) {
+        const parts = String(value || "").split(",").map((item) => Number(item.trim()));
+        if (parts.length !== 2 || parts.some((item) => !Number.isFinite(item))) {
+            return null;
+        }
+        return { label: "tọa độ đã nhập", lat: parts[0], lng: parts[1] };
+    }
+
+    function haversineKm(from, to) {
+        const radius = 6371;
+        const dLat = toRadians(to.lat - from.lat);
+        const dLng = toRadians(to.lng - from.lng);
+        const lat1 = toRadians(from.lat);
+        const lat2 = toRadians(to.lat);
+        const a = Math.sin(dLat / 2) ** 2
+                + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+        return 2 * radius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function toRadians(value) {
+        return value * Math.PI / 180;
+    }
+
+    function formatDistance(value) {
+        return `${Number(value || 0).toLocaleString("vi-VN", { maximumFractionDigits: 1 })} km`;
+    }
+
+    function formatCoordinate(value) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number.toFixed(6) : "Chưa cập nhật";
+    }
+
     function mapUrl(room) {
         const query = room.latitude && room.longitude
                 ? `${room.latitude},${room.longitude}`
                 : room.address || "Hà Nội";
         return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+    }
+
+    function mapDirectionsUrl(room, origin = null) {
+        const destination = roomPoint(room);
+        if (!destination) {
+            return mapUrl(room);
+        }
+        const originText = origin ? `${origin.lat},${origin.lng}` : "21.0285,105.8542";
+        return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originText)}&destination=${destination.lat},${destination.lng}`;
     }
 
     function tenantActionUrl(roomId, sectionId) {

@@ -6,6 +6,9 @@
     const countNode = document.querySelector("#listingRoomCount");
     const searchForm = document.querySelector(".listing-search-form") || document.querySelector(".page-title .search-box");
     const filterForm = document.querySelector(".listing-filter-bar") || document.querySelector(".filter-panel form");
+    const roomsMapNode = document.querySelector("#roomsMap");
+    const mapSummaryNode = document.querySelector("#listingMapSummary");
+    const mapRadiusSelect = document.querySelector("[data-map-radius]");
 
     if (!grid) {
         return;
@@ -13,6 +16,20 @@
 
     const params = new URLSearchParams(window.location.search);
     let favoriteRoomIds = new Set();
+    let currentRooms = [];
+    let currentTotal = 0;
+    let listingMap = null;
+    let listingMarkers = [];
+    let listingRadiusCircle = null;
+    let selectedMapPoint = null;
+
+    const HANOI_CENTER = { label: "Trung tâm Hồ Gươm", lat: 21.0285, lng: 105.8542 };
+    const MAP_POINTS = {
+        university: { label: "ĐHQG Hà Nội - Cầu Giấy", lat: 21.0379, lng: 105.7824 },
+        office: { label: "Khu văn phòng Keangnam", lat: 21.0171, lng: 105.7847 },
+        industrial: { label: "Khu công nghiệp Thăng Long", lat: 21.1398, lng: 105.7894 },
+        center: HANOI_CENTER
+    };
 
     function value(name) {
         return params.get(name) || "";
@@ -203,6 +220,26 @@
             });
         });
     }
+
+    function bindMapSearchControls() {
+        document.querySelectorAll("[data-map-focus]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const point = MAP_POINTS[button.dataset.mapFocus];
+                if (!point) {
+                    return;
+                }
+                selectedMapPoint = point;
+                document.querySelectorAll("[data-map-focus]").forEach((item) => {
+                    item.classList.toggle("active", item === button);
+                });
+                renderRooms(sortRoomsByDistance(currentRooms, point), currentTotal);
+            });
+        });
+
+        mapRadiusSelect?.addEventListener("change", () => {
+            renderListingMap(currentRooms);
+        });
+    }
  
     function apiUrl() {
         const apiParams = new URLSearchParams();
@@ -244,10 +281,13 @@
         } catch (error) {
             summary.textContent = error.message;
             grid.innerHTML = `<div class="empty-state">Không thể tải danh sách phòng. Vui lòng kiểm tra backend và database.</div>`;
+            renderListingMap([]);
         }
     }
 
     function renderRooms(rooms, total) {
+        currentRooms = rooms || [];
+        currentTotal = total || currentRooms.length;
         if (countNode) {
             countNode.textContent = total.toLocaleString("vi-VN");
         }
@@ -258,10 +298,12 @@
 
         if (!rooms.length) {
             grid.innerHTML = `<div class="empty-state">Thử đổi khu vực, khoảng giá hoặc trạng thái phòng.</div>`;
+            renderListingMap([]);
             return;
         }
 
         grid.innerHTML = rooms.map(roomCard).join("");
+        renderListingMap(rooms);
     }
 
     async function loadFavoriteRoomIds() {
@@ -293,6 +335,10 @@
         const ratingLabel = reviewCount > 0 ? rating.toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "Mới";
         const district = districtFromAddress(room.address);
         const isFavorite = favoriteRoomIds.has(Number(room.id));
+        const selectedDistance = selectedMapPoint ? distanceFromPoint(room, selectedMapPoint) : null;
+        const distanceLine = selectedDistance !== null
+                ? `Cách ${escapeHtml(selectedMapPoint.label)} ${formatDistance(selectedDistance)}`
+                : `Cách trung tâm Hà Nội ${distanceFor(index)} km`;
 
         return `
             <article class="listing-room-card">
@@ -320,7 +366,7 @@
                     <div class="listing-distance">
                         <span>
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-                            Cách trung tâm Hà Nội ${distanceFor(index)} km
+                            ${distanceLine}
                         </span>
                         <span>·</span>
                         <span>${formatArea(room.area)}</span>
@@ -362,6 +408,146 @@
         button.textContent = isFavorite ? "♥" : "♡";
         button.classList.toggle("is-active", isFavorite);
         button.setAttribute("aria-label", isFavorite ? "Bỏ lưu yêu thích" : "Lưu yêu thích");
+    }
+
+    function renderListingMap(rooms) {
+        if (!roomsMapNode) {
+            return;
+        }
+
+        const points = (rooms || [])
+                .map((room) => ({ room, point: roomPoint(room) }))
+                .filter((item) => item.point);
+
+        if (!window.L) {
+            roomsMapNode.innerHTML = `
+                <div class="map-fallback">
+                    <strong>Không tải được bản đồ tương tác.</strong>
+                    <a href="https://www.google.com/maps/search/phòng+trọ+Hà+Nội" target="_blank" rel="noopener">Mở Google Maps</a>
+                </div>
+            `;
+            updateMapSummary(points);
+            return;
+        }
+
+        if (!listingMap) {
+            listingMap = L.map(roomsMapNode, { scrollWheelZoom: false }).setView([HANOI_CENTER.lat, HANOI_CENTER.lng], 12);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19,
+                attribution: "&copy; OpenStreetMap"
+            }).addTo(listingMap);
+        }
+
+        listingMarkers.forEach((marker) => marker.remove());
+        listingMarkers = [];
+        if (listingRadiusCircle) {
+            listingRadiusCircle.remove();
+            listingRadiusCircle = null;
+        }
+
+        points.forEach(({ room, point }) => {
+            const distance = selectedMapPoint ? haversineKm(selectedMapPoint, point) : null;
+            const marker = L.marker([point.lat, point.lng]).addTo(listingMap);
+            marker.bindPopup(`
+                <div class="map-popup">
+                    <strong>${escapeHtml(room.title)}</strong>
+                    <span>${escapeHtml(room.address)}</span>
+                    <b>${formatMoney(room.price)} / tháng</b>
+                    ${distance !== null ? `<small>Cách ${escapeHtml(selectedMapPoint.label)} ${formatDistance(distance)}</small>` : ""}
+                    <a href="room-detail.html?id=${room.id}">Xem chi tiết</a>
+                </div>
+            `);
+            listingMarkers.push(marker);
+        });
+
+        const center = selectedMapPoint || mapCenterFromPoints(points);
+        listingMap.setView([center.lat, center.lng], selectedMapPoint ? 13 : 11);
+
+        if (selectedMapPoint) {
+            const radius = Number(mapRadiusSelect?.value || 5) * 1000;
+            listingRadiusCircle = L.circle([selectedMapPoint.lat, selectedMapPoint.lng], {
+                radius,
+                color: "#ef3f68",
+                weight: 2,
+                fillColor: "#ef3f68",
+                fillOpacity: 0.08
+            }).addTo(listingMap);
+        } else if (points.length > 1) {
+            const group = L.featureGroup(listingMarkers);
+            listingMap.fitBounds(group.getBounds().pad(0.16), { maxZoom: 13 });
+        }
+
+        setTimeout(() => listingMap.invalidateSize(), 80);
+        updateMapSummary(points);
+    }
+
+    function updateMapSummary(points) {
+        if (!mapSummaryNode) {
+            return;
+        }
+        if (!points.length) {
+            mapSummaryNode.textContent = "Chưa có phòng có tọa độ để hiển thị.";
+            return;
+        }
+        if (!selectedMapPoint) {
+            mapSummaryNode.textContent = `Đang đánh dấu ${points.length} phòng trên bản đồ.`;
+            return;
+        }
+        const radius = Number(mapRadiusSelect?.value || 5);
+        const nearby = points.filter(({ point }) => haversineKm(selectedMapPoint, point) <= radius).length;
+        mapSummaryNode.textContent = `${nearby}/${points.length} phòng trong bán kính ${radius} km quanh ${selectedMapPoint.label}.`;
+    }
+
+    function roomPoint(room) {
+        const lat = Number(room?.latitude);
+        const lng = Number(room?.longitude);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return null;
+        }
+        return { lat, lng };
+    }
+
+    function mapCenterFromPoints(points) {
+        if (!points.length) {
+            return HANOI_CENTER;
+        }
+        const sum = points.reduce((acc, item) => ({
+            lat: acc.lat + item.point.lat,
+            lng: acc.lng + item.point.lng
+        }), { lat: 0, lng: 0 });
+        return { label: "Trung tâm danh sách", lat: sum.lat / points.length, lng: sum.lng / points.length };
+    }
+
+    function sortRoomsByDistance(rooms, point) {
+        return [...(rooms || [])].sort((left, right) => {
+            const leftDistance = distanceFromPoint(left, point);
+            const rightDistance = distanceFromPoint(right, point);
+            return (leftDistance ?? Number.MAX_VALUE) - (rightDistance ?? Number.MAX_VALUE);
+        });
+    }
+
+    function distanceFromPoint(room, point) {
+        const roomLocation = roomPoint(room);
+        return roomLocation ? haversineKm(point, roomLocation) : null;
+    }
+
+    function haversineKm(from, to) {
+        const radius = 6371;
+        const dLat = toRadians(to.lat - from.lat);
+        const dLng = toRadians(to.lng - from.lng);
+        const lat1 = toRadians(from.lat);
+        const lat2 = toRadians(to.lat);
+        const a = Math.sin(dLat / 2) ** 2
+                + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+        return 2 * radius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function toRadians(value) {
+        return value * Math.PI / 180;
+    }
+
+    function formatDistance(value) {
+        return `${Number(value || 0).toLocaleString("vi-VN", { maximumFractionDigits: 1 })} km`;
     }
 
     function ratingStars(rating, reviewCount) {
@@ -414,5 +600,6 @@
     bindForms();
     bindFavoriteButtons();
     bindImageCarousel();
+    bindMapSearchControls();
     loadRooms();
 })();

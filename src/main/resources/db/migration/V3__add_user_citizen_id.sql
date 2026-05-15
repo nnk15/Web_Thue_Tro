@@ -10,3 +10,5 @@ ALTER TABLE users
 
 ALTER TABLE users
     ADD CONSTRAINT uq_users_citizen_id UNIQUE (citizen_id);
+
+
