@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -49,6 +50,9 @@ public class RoomService {
 
     @Inject
     NotificationService notificationService;
+
+    @Inject
+    GeocodingService geocodingService;
 
     @Inject
     AuthContext authContext;
@@ -75,9 +79,9 @@ public class RoomService {
         Map<String, Object> params = new HashMap<>();
         List<String> conditions = new ArrayList<>();
         conditions.add("r.approvalStatus = :approved");
-        conditions.add("r.status <> :hidden");
+        conditions.add("r.status = :available");
         params.put("approved", ApprovalStatus.APPROVED);
-        params.put("hidden", RoomStatus.HIDDEN);
+        params.put("available", RoomStatus.AVAILABLE);
         addSupportedCityConditions(conditions, params);
 
         if (hasText(keyword)) {
@@ -103,10 +107,6 @@ public class RoomService {
         if (maxArea != null) {
             conditions.add("r.area <= :maxArea");
             params.put("maxArea", maxArea);
-        }
-        if (status != null) {
-            conditions.add("r.status = :status");
-            params.put("status", status);
         }
         if (hasText(furnitureType)) {
             conditions.add("lower(r.furnitureType) like :furnitureType");
@@ -135,7 +135,7 @@ public class RoomService {
     public RoomDtos.RoomResponse get(Long id) {
         Room room = getRoom(id);
         boolean publicVisible = room.approvalStatus == ApprovalStatus.APPROVED
-                && room.status != RoomStatus.HIDDEN
+                && room.status == RoomStatus.AVAILABLE
                 && isSupportedAddress(room.address);
         boolean ownerOrAdmin = authContext.currentUser()
                 .map(user -> user.role == Role.ADMIN || room.landlord.id.equals(user.id))
@@ -278,13 +278,35 @@ public class RoomService {
         room.price = request.price();
         room.deposit = request.deposit();
         room.area = request.area();
-        room.address = request.address().trim();
+        String nextAddress = request.address().trim();
+        boolean addressChanged = room.id == null || !nextAddress.equals(room.address);
+        room.address = nextAddress;
         room.description = request.description();
         room.amenities = request.amenities();
         room.rules = request.rules();
         room.furnitureType = request.furnitureType();
-        room.latitude = request.latitude();
-        room.longitude = request.longitude();
+        applyCoordinates(room, request, addressChanged);
+    }
+
+    private void applyCoordinates(Room room, RoomDtos.RoomRequest request, boolean addressChanged) {
+        Optional<GeocodingService.GeocodeResult> geocoded = geocodingService.geocode(room.address);
+        if (geocoded.isPresent()) {
+            GeocodingService.GeocodeResult point = geocoded.get();
+            room.latitude = point.latitude();
+            room.longitude = point.longitude();
+            return;
+        }
+
+        if (request.latitude() != null && request.longitude() != null) {
+            room.latitude = request.latitude();
+            room.longitude = request.longitude();
+            return;
+        }
+
+        if (addressChanged) {
+            room.latitude = null;
+            room.longitude = null;
+        }
     }
 
     private long countRooms(String whereClause, Map<String, Object> params) {

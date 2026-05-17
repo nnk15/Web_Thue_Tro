@@ -340,7 +340,12 @@
             "landlord-requests.html": ["LANDLORD", "ADMIN"],
             "landlord-appointments.html": ["LANDLORD", "ADMIN"],
             "landlord-notifications.html": ["LANDLORD", "ADMIN"],
-            "admin-dashboard.html": ["ADMIN"]
+            "admin-dashboard.html": ["ADMIN"],
+            "admin-users.html": ["ADMIN"],
+            "admin-landlords.html": ["ADMIN"],
+            "admin-rooms.html": ["ADMIN"],
+            "admin-reports.html": ["ADMIN"],
+            "admin-statistics.html": ["ADMIN"]
         };
         const allowedRoles = protectedPages[page];
         if (!allowedRoles) {

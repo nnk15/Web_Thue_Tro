@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê chi tiết | One Room One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="admin-page">
+<main class="dashboard-shell admin-shell">
+    <aside class="sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a href="admin-dashboard.html">Thống kê</a>
+            <a href="admin-users.html">Người dùng</a>
+            <a href="admin-landlords.html">Chủ trọ</a>
+            <a href="admin-rooms.html">Kiểm duyệt tin</a>
+            <a href="admin-reports.html">Báo cáo vi phạm</a>
+            <a class="active" href="admin-statistics.html">Thống kê chi tiết</a>
+            <a href="profile.html">Tài khoản</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <div class="dashboard-top">
+            <div>
+                <h1>Thống kê chi tiết</h1>
+                <p>Xem nhanh toàn bộ yêu cầu thuê và lịch xem phòng trong hệ thống.</p>
+            </div>
+        </div>
+
+        <section class="data-panel admin-data-panel" id="system-statistics">
+            <div class="panel-head">
+                <div>
+                    <h2>Thống kê toàn hệ thống</h2>
+                    <p class="panel-note">Bấm xem để mở danh sách chi tiết trong màn hình nhỏ.</p>
+                </div>
+            </div>
+            <div class="compact-list">
+                <div class="empty-state">Đang tải thống kê...</div>
+            </div>
+        </section>
+
+        <section class="admin-view-modal" id="system-detail" hidden aria-hidden="true">
+            <div class="admin-view-dialog" role="dialog" aria-modal="true" aria-labelledby="system-detail-title">
+                <div class="admin-view-head">
+                    <div>
+                        <h2 id="system-detail-title" data-system-detail-title>Chi tiết</h2>
+                        <p class="panel-note">Danh sách dữ liệu chi tiết theo mục đã chọn.</p>
+                    </div>
+                    <button class="modal-close admin-view-close" type="button" data-close-system-detail aria-label="Đóng">&times;</button>
+                </div>
+                <div class="admin-view-content" data-system-detail-content>
+                    <div class="empty-state">Chọn một mục thống kê để xem chi tiết.</div>
+                </div>
+            </div>
+        </section>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/admin-dashboard.js"></script>
+</body>
+</html>

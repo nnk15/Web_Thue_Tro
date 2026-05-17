@@ -26,6 +26,9 @@ import java.util.List;
 public class DataSeeder {
     private static final String SEED_EMAIL_DOMAIN = "@nhatro-hanoi.local";
     private static final String DEFAULT_PASSWORD = "123456";
+    private static final int ORIGINAL_ROOM_COUNT = 100;
+    private static final int AFFORDABLE_ROOM_COUNT = 100;
+    private static final String AFFORDABLE_ROOM_PREFIX = "Phòng giá tốt";
 
     private static final String[] LANDLORD_NAMES = {
             "Nguyễn Văn Huy",
@@ -37,20 +40,60 @@ public class DataSeeder {
             "Hoàng Đức Long",
             "Đặng Thanh Mai",
             "Vũ Bảo Khanh",
-            "Phan Ngọc Linh"
+            "Phan Ngọc Linh",
+            "Nguyễn Hải Đăng",
+            "Trịnh Mai Phương",
+            "Cao Tuấn Kiệt",
+            "Mai Thanh Hà",
+            "Tạ Đức Minh",
+            "Ngô Hương Giang",
+            "Đinh Quang Hưng",
+            "Lý Bảo Ngọc",
+            "Đào Minh Khang",
+            "Hà Thu Uyên"
     };
 
-    private static final String[][] DISTRICT_DATA = {
-            {"Cầu Giấy", "Trần Duy Hưng", "Xuân Thủy", "Duy Tân", "Nguyễn Khang"},
-            {"Đống Đa", "Chùa Bộc", "Tây Sơn", "Phạm Ngọc Thạch", "Thái Hà"},
-            {"Hai Bà Trưng", "Minh Khai", "Bạch Mai", "Trần Đại Nghĩa", "Lê Thanh Nghị"},
-            {"Thanh Xuân", "Nguyễn Trãi", "Khuất Duy Tiến", "Vũ Trọng Phụng", "Nguyễn Xiển"},
-            {"Tây Hồ", "Xuân Diệu", "Âu Cơ", "Võ Chí Công", "Đặng Thai Mai"},
-            {"Nam Từ Liêm", "Mễ Trì", "Đình Thôn", "Phạm Hùng", "Hàm Nghi"},
-            {"Hà Đông", "Quang Trung", "Tố Hữu", "Vạn Phúc", "Nguyễn Văn Lộc"},
-            {"Hoàng Mai", "Giải Phóng", "Lĩnh Nam", "Trương Định", "Tân Mai"},
-            {"Ba Đình", "Đội Cấn", "Kim Mã", "Giảng Võ", "Ngọc Hà"},
-            {"Long Biên", "Nguyễn Văn Cừ", "Ngọc Lâm", "Cổ Linh", "Sài Đồng"}
+    private static final Object[][] REAL_ADDRESS_DATA = {
+            {"Cầu Giấy", "Xuân Thủy, Cầu Giấy, Hà Nội", 21.037900, 105.782400},
+            {"Cầu Giấy", "Phạm Văn Bạch, Cầu Giấy, Hà Nội", 21.029700, 105.790800},
+            {"Cầu Giấy", "Trần Duy Hưng, Cầu Giấy, Hà Nội", 21.014000, 105.800500},
+            {"Cầu Giấy", "Cầu Giấy, Cầu Giấy, Hà Nội", 21.032300, 105.801100},
+            {"Đống Đa", "Chùa Bộc, Đống Đa, Hà Nội", 21.008100, 105.831500},
+            {"Đống Đa", "Tây Sơn, Đống Đa, Hà Nội", 21.004900, 105.824100},
+            {"Đống Đa", "Phạm Ngọc Thạch, Đống Đa, Hà Nội", 21.006700, 105.831900},
+            {"Đống Đa", "Thái Hà, Đống Đa, Hà Nội", 21.011100, 105.819500},
+            {"Hai Bà Trưng", "Đại Cồ Việt, Hai Bà Trưng, Hà Nội", 21.006000, 105.843400},
+            {"Hai Bà Trưng", "Giải Phóng, Hai Bà Trưng, Hà Nội", 21.002700, 105.841300},
+            {"Hai Bà Trưng", "Minh Khai, Hai Bà Trưng, Hà Nội", 20.996000, 105.860300},
+            {"Hai Bà Trưng", "Trần Đại Nghĩa, Hai Bà Trưng, Hà Nội", 21.003400, 105.846700},
+            {"Thanh Xuân", "Nguyễn Trãi, Thanh Xuân, Hà Nội", 20.996900, 105.806200},
+            {"Thanh Xuân", "Khuất Duy Tiến, Thanh Xuân, Hà Nội", 21.004900, 105.800000},
+            {"Thanh Xuân", "Vũ Trọng Phụng, Thanh Xuân, Hà Nội", 20.999700, 105.807800},
+            {"Thanh Xuân", "Nguyễn Xiển, Thanh Xuân, Hà Nội", 20.983500, 105.801700},
+            {"Tây Hồ", "Xuân Diệu, Tây Hồ, Hà Nội", 21.062000, 105.827200},
+            {"Tây Hồ", "Âu Cơ, Tây Hồ, Hà Nội", 21.064500, 105.823000},
+            {"Tây Hồ", "Võ Chí Công, Tây Hồ, Hà Nội", 21.074300, 105.808600},
+            {"Tây Hồ", "Đặng Thai Mai, Tây Hồ, Hà Nội", 21.061400, 105.826500},
+            {"Nam Từ Liêm", "Phạm Hùng, Nam Từ Liêm, Hà Nội", 21.016800, 105.784600},
+            {"Nam Từ Liêm", "Mễ Trì, Nam Từ Liêm, Hà Nội", 21.013600, 105.778600},
+            {"Nam Từ Liêm", "Hàm Nghi, Nam Từ Liêm, Hà Nội", 21.030500, 105.775200},
+            {"Nam Từ Liêm", "Đình Thôn, Nam Từ Liêm, Hà Nội", 21.020900, 105.777700},
+            {"Hà Đông", "Quang Trung, Hà Đông, Hà Nội", 20.971500, 105.775700},
+            {"Hà Đông", "Tố Hữu, Hà Đông, Hà Nội", 20.998500, 105.790000},
+            {"Hà Đông", "Vạn Phúc, Hà Đông, Hà Nội", 20.980400, 105.775600},
+            {"Hà Đông", "Nguyễn Văn Lộc, Hà Đông, Hà Nội", 20.979100, 105.787300},
+            {"Hoàng Mai", "Giải Phóng, Hoàng Mai, Hà Nội", 20.971000, 105.844900},
+            {"Hoàng Mai", "Lĩnh Nam, Hoàng Mai, Hà Nội", 20.986800, 105.876400},
+            {"Hoàng Mai", "Trương Định, Hoàng Mai, Hà Nội", 20.978400, 105.847500},
+            {"Hoàng Mai", "Tân Mai, Hoàng Mai, Hà Nội", 20.983200, 105.852200},
+            {"Ba Đình", "Đội Cấn, Ba Đình, Hà Nội", 21.035800, 105.826000},
+            {"Ba Đình", "Kim Mã, Ba Đình, Hà Nội", 21.031900, 105.821200},
+            {"Ba Đình", "Giảng Võ, Ba Đình, Hà Nội", 21.027500, 105.824500},
+            {"Ba Đình", "Ngọc Hà, Ba Đình, Hà Nội", 21.038800, 105.831500},
+            {"Long Biên", "Nguyễn Văn Cừ, Long Biên, Hà Nội", 21.043400, 105.874500},
+            {"Long Biên", "Ngọc Lâm, Long Biên, Hà Nội", 21.043500, 105.872300},
+            {"Long Biên", "Cổ Linh, Long Biên, Hà Nội", 21.025400, 105.895400},
+            {"Long Biên", "Sài Đồng, Long Biên, Hà Nội", 21.034900, 105.913300}
     };
 
     private static final String[] ROOM_TYPES = {
@@ -68,10 +111,10 @@ public class DataSeeder {
 
     private static final String[] AMENITIES = {
             "Máy lạnh, giường, tủ quần áo, bàn học, wifi, camera, giữ xe",
-            "Bếp riêng, máy giặt chung, nóng lạnh, wifi, khóa vân tay",
+            "Bếp riêng, máy giặt, nóng lạnh, wifi, khóa vân tay",
             "Thang máy, camera, bảo vệ, máy lạnh, tủ lạnh, ban công",
-            "Giờ giấc tự do, vệ sinh khép kín, bếp riêng, chỗ để xe",
-            "Full nội thất, cửa sổ lớn, máy giặt, máy sấy, internet tốc độ cao"
+            "Vệ sinh khép kín, bếp riêng, giữ xe, an ninh 24/7",
+            "Máy giặt, máy sấy, wifi, nóng lạnh, ban công"
     };
 
     private static final String[] RULES = {
@@ -83,7 +126,7 @@ public class DataSeeder {
     };
 
     private static final String[] FURNITURE_TYPES = {
-            "Full nội thất",
+            "Đầy đủ",
             "Cơ bản",
             "Không nội thất"
     };
@@ -97,6 +140,57 @@ public class DataSeeder {
             "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=900&q=85",
             "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=900&q=85",
             "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=900&q=85"
+    };
+
+    private static final double[][] AFFORDABLE_COORDINATE_OFFSETS = {
+            {-0.0180, -0.0150},
+            {-0.0085, 0.0140},
+            {0.0065, -0.0115},
+            {0.0155, 0.0105},
+            {0.0230, -0.0025}
+    };
+
+    private static final AffordableDistrictSeed[] AFFORDABLE_DISTRICTS = {
+            new AffordableDistrictSeed("Bắc Từ Liêm", "Đại học Mỏ - Địa chất", 21.065000, 105.760000,
+                    new String[]{"Cổ Nhuế", "Phạm Văn Đồng", "Hoàng Quốc Việt", "Đức Thắng", "Văn Tiến Dũng"}),
+            new AffordableDistrictSeed("Hoàn Kiếm", "Hồ Hoàn Kiếm", 21.028500, 105.854200,
+                    new String[]{"Hàng Bài", "Trần Hưng Đạo", "Lý Thường Kiệt", "Hàng Bông", "Phùng Hưng"}),
+            new AffordableDistrictSeed("Gia Lâm", "Học viện Nông nghiệp", 21.023400, 105.935200,
+                    new String[]{"Ngô Xuân Quảng", "Trâu Quỳ", "Nguyễn Mậu Tài", "Cổ Bi", "Dương Xá"}),
+            new AffordableDistrictSeed("Đông Anh", "cầu Nhật Tân", 21.136200, 105.849700,
+                    new String[]{"Cao Lỗ", "Uy Nỗ", "Võ Nguyên Giáp", "Nam Hồng", "Vĩnh Ngọc"}),
+            new AffordableDistrictSeed("Hoài Đức", "Đại lộ Thăng Long", 21.038400, 105.690400,
+                    new String[]{"Quốc lộ 32", "Lai Xá", "An Khánh", "Vân Canh", "Di Trạch"}),
+            new AffordableDistrictSeed("Thanh Trì", "bến xe Nước Ngầm", 20.941400, 105.844800,
+                    new String[]{"Ngọc Hồi", "Tứ Hiệp", "Cầu Bươu", "Tân Triều", "Văn Điển"}),
+            new AffordableDistrictSeed("Sóc Sơn", "sân bay Nội Bài", 21.258400, 105.848600,
+                    new String[]{"Võ Nguyên Giáp", "Quốc lộ 3", "Phù Lỗ", "Xuân Giang", "Nội Bài"}),
+            new AffordableDistrictSeed("Sơn Tây", "Làng cổ Đường Lâm", 21.140300, 105.506900,
+                    new String[]{"Chùa Thông", "Lê Lợi", "Phùng Hưng", "Thanh Mỹ", "Xuân Khanh"}),
+            new AffordableDistrictSeed("Ba Vì", "Vườn quốc gia Ba Vì", 21.199300, 105.423200,
+                    new String[]{"Tây Đằng", "Tản Lĩnh", "Vật Lại", "Ba Trại", "Minh Quang"}),
+            new AffordableDistrictSeed("Chương Mỹ", "Xuân Mai", 20.923700, 105.700600,
+                    new String[]{"Xuân Mai", "Chúc Sơn", "Quốc lộ 6", "Đông Phương Yên", "Trường Yên"}),
+            new AffordableDistrictSeed("Đan Phượng", "thị trấn Phùng", 21.088100, 105.670800,
+                    new String[]{"Phùng", "Tân Hội", "Hồng Hà", "Liên Hà", "Thọ An"}),
+            new AffordableDistrictSeed("Mê Linh", "khu công nghiệp Quang Minh", 21.184600, 105.720900,
+                    new String[]{"Chi Đông", "Đại Thịnh", "Quang Minh", "Tiền Phong", "Tráng Việt"}),
+            new AffordableDistrictSeed("Mỹ Đức", "chùa Hương", 20.706000, 105.741400,
+                    new String[]{"Đại Nghĩa", "Hương Sơn", "Tế Tiêu", "An Mỹ", "Phù Lưu Tế"}),
+            new AffordableDistrictSeed("Phú Xuyên", "ga Phú Xuyên", 20.733800, 105.912200,
+                    new String[]{"Phú Minh", "Phú Xuyên", "Phú Túc", "Đại Xuyên", "Nam Tiến"}),
+            new AffordableDistrictSeed("Phúc Thọ", "thị trấn Phúc Thọ", 21.106800, 105.545900,
+                    new String[]{"Phúc Thọ", "Gạch", "Võng Xuyên", "Tam Hiệp", "Long Xuyên"}),
+            new AffordableDistrictSeed("Quốc Oai", "chùa Thầy", 20.992800, 105.640300,
+                    new String[]{"Quốc Oai", "Sài Sơn", "Thạch Thán", "Phú Cát", "Đông Xuân"}),
+            new AffordableDistrictSeed("Thạch Thất", "khu công nghệ cao Hòa Lạc", 21.005000, 105.540700,
+                    new String[]{"Liên Quan", "Hòa Lạc", "Phùng Xá", "Bình Yên", "Kim Quan"}),
+            new AffordableDistrictSeed("Thanh Oai", "Kim Bài", 20.861100, 105.768700,
+                    new String[]{"Kim Bài", "Bình Minh", "Cao Viên", "Bích Hòa", "Thanh Cao"}),
+            new AffordableDistrictSeed("Thường Tín", "ga Thường Tín", 20.870600, 105.861900,
+                    new String[]{"Thường Tín", "Tía", "Hồng Vân", "Ninh Sở", "Vạn Điểm"}),
+            new AffordableDistrictSeed("Ứng Hòa", "Vân Đình", 20.730700, 105.777800,
+                    new String[]{"Vân Đình", "Hòa Xá", "Đại Hùng", "Trầm Lộng", "Phương Tú"})
     };
 
     @Inject
@@ -116,6 +210,8 @@ public class DataSeeder {
         seedCoreUsers();
         List<User> landlords = seedLandlords();
         seedRooms(landlords);
+        normalizeSeedRoomAddresses();
+        seedAffordableRooms(landlords);
         seedRoomReviews();
     }
 
@@ -163,7 +259,7 @@ public class DataSeeder {
             userRepository.persist(user);
         }
 
-        return userRepository.find("email like ?1 order by email", "%" + SEED_EMAIL_DOMAIN)
+        return userRepository.find("email like ?1 and role = ?2 order by email", "%" + SEED_EMAIL_DOMAIN, Role.LANDLORD)
                 .list();
     }
 
@@ -178,9 +274,14 @@ public class DataSeeder {
             return;
         }
 
-        for (int i = 0; i < 100; i++) {
+        long existingSeedRooms = roomRepository.count("landlord.email like ?1", "%" + SEED_EMAIL_DOMAIN);
+        if (existingSeedRooms >= ORIGINAL_ROOM_COUNT) {
+            return;
+        }
+
+        for (int i = (int) existingSeedRooms; i < ORIGINAL_ROOM_COUNT; i++) {
             RoomDraft draft = roomDraft(i);
-            if (roomRepository.count("title = ?1 and address = ?2", draft.title(), draft.address()) > 0) {
+            if (roomRepository.count("landlord.email like ?1 and title = ?2 and address = ?3", "%" + SEED_EMAIL_DOMAIN, draft.title(), draft.address()) > 0) {
                 continue;
             }
 
@@ -203,6 +304,71 @@ public class DataSeeder {
 
             persistImage(room, IMAGE_URLS[i % IMAGE_URLS.length]);
             persistImage(room, IMAGE_URLS[(i + 3) % IMAGE_URLS.length]);
+        }
+    }
+
+    private void normalizeSeedRoomAddresses() {
+        List<Room> seedRooms = roomRepository.find(
+                        "landlord.email like ?1 and title not like ?2 order by id",
+                        "%" + SEED_EMAIL_DOMAIN,
+                        AFFORDABLE_ROOM_PREFIX + "%")
+                .list();
+        int count = Math.min(seedRooms.size(), ORIGINAL_ROOM_COUNT);
+        for (int i = 0; i < count; i++) {
+            Room room = seedRooms.get(i);
+            RoomDraft draft = roomDraft(i);
+            room.title = draft.title();
+            room.address = draft.address();
+            room.description = draft.description();
+            room.amenities = draft.amenities();
+            room.furnitureType = draft.furnitureType();
+            room.latitude = draft.latitude();
+            room.longitude = draft.longitude();
+        }
+    }
+
+    private void seedAffordableRooms(List<User> landlords) {
+        if (landlords.size() < LANDLORD_NAMES.length) {
+            return;
+        }
+
+        long existingAffordableRooms = roomRepository.count(
+                "landlord.email like ?1 and title like ?2",
+                "%" + SEED_EMAIL_DOMAIN,
+                AFFORDABLE_ROOM_PREFIX + "%");
+        if (existingAffordableRooms >= AFFORDABLE_ROOM_COUNT) {
+            return;
+        }
+
+        for (int i = (int) existingAffordableRooms; i < AFFORDABLE_ROOM_COUNT; i++) {
+            RoomDraft draft = affordableRoomDraft(i);
+            if (roomRepository.count(
+                    "landlord.email like ?1 and title = ?2 and address = ?3",
+                    "%" + SEED_EMAIL_DOMAIN,
+                    draft.title(),
+                    draft.address()) > 0) {
+                continue;
+            }
+
+            Room room = new Room();
+            room.landlord = landlords.get((i + ORIGINAL_ROOM_COUNT) % landlords.size());
+            room.title = draft.title();
+            room.price = draft.price();
+            room.deposit = draft.deposit();
+            room.area = draft.area();
+            room.address = draft.address();
+            room.description = draft.description();
+            room.amenities = draft.amenities();
+            room.rules = draft.rules();
+            room.furnitureType = draft.furnitureType();
+            room.status = RoomStatus.AVAILABLE;
+            room.approvalStatus = ApprovalStatus.APPROVED;
+            room.latitude = draft.latitude();
+            room.longitude = draft.longitude();
+            roomRepository.persist(room);
+
+            persistImage(room, IMAGE_URLS[(i + 1) % IMAGE_URLS.length]);
+            persistImage(room, IMAGE_URLS[(i + 5) % IMAGE_URLS.length]);
         }
     }
 
@@ -253,20 +419,17 @@ public class DataSeeder {
     }
 
     private RoomDraft roomDraft(int index) {
-        String[] district = DISTRICT_DATA[index % DISTRICT_DATA.length];
-        String districtName = district[0];
-        String street = district[1 + (index / DISTRICT_DATA.length) % 4];
+        Object[] addressData = REAL_ADDRESS_DATA[index % REAL_ADDRESS_DATA.length];
+        String districtName = (String) addressData[0];
+        String address = detailedAddress(index, (String) addressData[1]);
         String roomType = ROOM_TYPES[index % ROOM_TYPES.length];
-        int houseNumber = 12 + (index * 7) % 180;
-        int laneNumber = 3 + (index * 5) % 90;
         double area = 18 + (index % 9) * 3.5;
         BigDecimal price = priceFor(index, districtName, area);
         String furnitureType = FURNITURE_TYPES[index % FURNITURE_TYPES.length];
         String title = "%s %s, gần %s".formatted(roomType, districtName, landmarkFor(districtName));
-        String address = "Số %d ngõ %d %s, %s, Hà Nội".formatted(houseNumber, laneNumber, street, districtName);
         String description = "%s diện tích %.1f m2 tại %s. Phòng phù hợp sinh viên, nhân viên văn phòng, di chuyển thuận tiện tới trường học, văn phòng và bến xe bus.".formatted(roomType, area, districtName);
-        double lat = 21.0285 + ((index % 10) - 5) * 0.008 + (index / 10) * 0.0005;
-        double lng = 105.8542 + ((index % 8) - 4) * 0.009 + (index / 8) * 0.0004;
+        double lat = (Double) addressData[2] + coordinateOffset(index, 3);
+        double lng = (Double) addressData[3] + coordinateOffset(index, 7);
 
         return new RoomDraft(
                 title,
@@ -283,6 +446,64 @@ public class DataSeeder {
         );
     }
 
+    private RoomDraft affordableRoomDraft(int index) {
+        AffordableDistrictSeed district = AFFORDABLE_DISTRICTS[index / 5 % AFFORDABLE_DISTRICTS.length];
+        int roomIndex = index % 5;
+        String street = district.streets()[roomIndex];
+        double[] offset = AFFORDABLE_COORDINATE_OFFSETS[roomIndex];
+        double lat = district.latitude() + offset[0];
+        double lng = district.longitude() + offset[1];
+        double area = 16 + ((index * 3) % 11) * 1.8;
+        BigDecimal price = affordablePriceFor(index);
+        String furnitureType = FURNITURE_TYPES[(index + 1) % FURNITURE_TYPES.length];
+        String roomType = switch (roomIndex) {
+            case 0 -> "Phòng riêng giá tốt";
+            case 1 -> "Studio nhỏ gọn";
+            case 2 -> "Phòng khép kín";
+            case 3 -> "Căn hộ mini tiết kiệm";
+            default -> "Phòng trọ sạch đẹp";
+        };
+        String title = "%s %s tại %s, gần %s".formatted(AFFORDABLE_ROOM_PREFIX, roomType, district.name(), district.landmark());
+        String address = affordableAddress(index, street, district.name());
+        String description = "%s diện tích %.1f m2 tại %s. Giá thuê phù hợp sinh viên và người đi làm, vị trí tách xa các phòng seed cũ để hiển thị rõ hơn trên bản đồ.".formatted(roomType, area, district.name());
+
+        return new RoomDraft(
+                title,
+                price,
+                price,
+                area,
+                address,
+                description,
+                AMENITIES[(index + 2) % AMENITIES.length],
+                RULES[(index + 1) % RULES.length],
+                furnitureType,
+                round(lat),
+                round(lng)
+        );
+    }
+
+    private String detailedAddress(int index, String baseAddress) {
+        String[] parts = baseAddress.split(",", 2);
+        String street = parts[0].trim();
+        String suffix = parts.length > 1 ? ", " + parts[1].trim() : "";
+        int houseNumber = 8 + (index * 7) % 190;
+        int alley = 12 + (index * 11) % 160;
+        int branch = 1 + (index * 5) % 29;
+
+        return switch (index % 4) {
+            case 0 -> "Số %d ngõ %d %s%s".formatted(houseNumber, alley, street, suffix);
+            case 1 -> "Số %d ngách %d/%d %s%s".formatted(houseNumber, alley, branch, street, suffix);
+            case 2 -> "Tòa nhà CT%d, số %d %s%s".formatted(1 + index % 9, houseNumber, street, suffix);
+            default -> "Số %d %s%s".formatted(houseNumber, street, suffix);
+        };
+    }
+
+    private double coordinateOffset(int index, int seed) {
+        int horizontal = (index + seed) % 5 - 2;
+        int vertical = ((index / 5) + seed) % 5 - 2;
+        return horizontal * 0.00035 + vertical * 0.00008;
+    }
+
     private BigDecimal priceFor(int index, String districtName, double area) {
         double base = switch (districtName) {
             case "Tây Hồ", "Ba Đình" -> 4_800_000;
@@ -293,6 +514,23 @@ public class DataSeeder {
         };
         double value = base + area * 55_000 + (index % 5) * 180_000;
         return BigDecimal.valueOf(Math.round(value / 10000) * 10000L);
+    }
+
+    private BigDecimal affordablePriceFor(int index) {
+        long value = 2_000_000L + ((index * 137_000L) % 1_910_000L);
+        return BigDecimal.valueOf(Math.round(value / 10000.0) * 10000L);
+    }
+
+    private String affordableAddress(int index, String street, String districtName) {
+        int houseNumber = 11 + (index * 13) % 220;
+        int alley = 21 + (index * 17) % 180;
+        return switch (index % 5) {
+            case 0 -> "Số %d ngõ %d %s, %s, Hà Nội".formatted(houseNumber, alley, street, districtName);
+            case 1 -> "Số %d %s, %s, Hà Nội".formatted(houseNumber, street, districtName);
+            case 2 -> "Tòa nhà mini số %d %s, %s, Hà Nội".formatted(houseNumber, street, districtName);
+            case 3 -> "Số %d ngách %d/3 %s, %s, Hà Nội".formatted(houseNumber, alley, street, districtName);
+            default -> "Cụm trọ số %d %s, %s, Hà Nội".formatted(houseNumber, street, districtName);
+        };
     }
 
     private String landmarkFor(String districtName) {
@@ -334,6 +572,15 @@ public class DataSeeder {
             String furnitureType,
             Double latitude,
             Double longitude
+    ) {
+    }
+
+    private record AffordableDistrictSeed(
+            String name,
+            String landmark,
+            double latitude,
+            double longitude,
+            String[] streets
     ) {
     }
 }

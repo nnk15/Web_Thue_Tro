@@ -1,5 +1,6 @@
 (() => {
     const main = document.querySelector("main");
+    const DETAIL_GEOCODE_CACHE_KEY = "nhatro.detailGeocodeCache.v1";
     const fallbackImage = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=85";
 
     if (!main) {
@@ -15,7 +16,7 @@
             await syncFavoriteButton(room.id);
             bindActions(room);
             bindGallery();
-            initDetailMap(room);
+            await initDetailMap(room);
             loadRelatedRooms(room);
         } catch (error) {
             main.innerHTML = `
@@ -62,12 +63,10 @@
     }
 
     function renderRoom(room) {
-        const status = room.status === "AVAILABLE" ? "Còn trống" : room.status === "HIDDEN" ? "Đang ẩn" : "Đã thuê";
-        const statusClass = room.status === "AVAILABLE" ? "badge-available" : "badge-rented";
         const images = room.imageUrls?.length ? room.imageUrls : [fallbackImage];
         const galleryImages = normalizeGalleryImages(images);
         const videos = room.videoUrls || [];
-        const amenities = splitText(room.amenities, ["Wifi", "An ninh 24/7", "Giữ xe"]);
+        const amenities = splitText(room.amenities, ["Đang cập nhật"]).filter((item) => !isDeprecatedAmenity(item));
         const rules = splitText(room.rules, ["Liên hệ chủ trọ để cập nhật nội quy chi tiết."]);
         const district = districtFromAddress(room.address);
         const contactPhone = room.landlordPhone || "";
@@ -129,7 +128,6 @@
 
                             <div class="detail-title-row">
                                 <div>
-                                    <span class="badge ${statusClass}">${status}</span>
                                     <h1>${escapeHtml(room.title)}</h1>
                                     <p>${escapeHtml(room.address)}</p>
                                 </div>
@@ -185,7 +183,7 @@
                         <section class="detail-block">
                             <h2>Tiện ích</h2>
                             <div class="amenities detail-amenities">
-                                ${amenities.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
+                                ${amenities.map((item) => amenityChip(item)).join("")}
                             </div>
                         </section>
 
@@ -216,7 +214,7 @@
                                     </div>
                                     <div>
                                         <dt>Tọa độ vị trí</dt>
-                                        <dd>${formatCoordinate(room.latitude)}, ${formatCoordinate(room.longitude)}</dd>
+                                        <dd data-map-coordinate>${formatCoordinate(room.latitude)}, ${formatCoordinate(room.longitude)}</dd>
                                     </div>
                                     <div>
                                         <dt>Khu vực xung quanh</dt>
@@ -275,6 +273,7 @@
                             <button class="detail-primary-action" type="button" data-open-rental-form>Gửi yêu cầu thuê</button>
                             <button class="detail-secondary-action" type="button" data-open-appointment-form>Đặt lịch xem phòng</button>
                             <a class="detail-contact-action" href="${contactPhone ? `tel:${escapeAttribute(contactPhone)}` : "#overview"}">Liên hệ người cho thuê</a>
+                            <button class="detail-secondary-action detail-report-action" type="button" data-open-report-form>Báo cáo vi phạm</button>
                             <div class="detail-shortlist-note">
                                 ${icon("heartFill")}
                                 <span>${reviewCount + 24} người đã quan tâm phòng này trong 30 ngày qua</span>
@@ -489,6 +488,30 @@
                         </form>
                     </div>
                 </section>
+
+                <section class="detail-request-modal" data-report-modal hidden>
+                    <div class="detail-request-card detail-report-card" role="dialog" aria-modal="true" aria-labelledby="report-form-title">
+                        <div class="modal-head">
+                            <div>
+                                <h2 id="report-form-title">Báo cáo vi phạm</h2>
+                                <p>${escapeHtml(room.title)}</p>
+                            </div>
+                            <button class="modal-close" type="button" data-close-report-form aria-label="Đóng">&times;</button>
+                        </div>
+                        <form class="form-grid detail-report-form" data-report-form>
+                            <input type="hidden" name="roomId" value="${room.id}">
+                            <div class="form-message" data-report-message></div>
+                            <label class="form-field full">
+                                <span>Nội dung vi phạm</span>
+                                <textarea name="reason" rows="6" minlength="10" required placeholder="Ví dụ: địa chỉ không đúng, ảnh không giống thực tế, giá thuê sai, chủ trọ có dấu hiệu lừa đảo..."></textarea>
+                            </label>
+                            <div class="modal-actions">
+                                <button class="btn btn-outline" type="button" data-close-report-form>Hủy</button>
+                                <button class="btn btn-primary" type="submit">Gửi báo cáo</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
             </section>
         `;
     }
@@ -568,9 +591,7 @@
 
     function relatedRoomCard(room) {
         const image = room.imageUrls?.[0] || fallbackImage;
-        const statusText = room.status === "AVAILABLE" ? "Còn trống" : room.status === "RENTED" ? "Đã thuê" : "Đang ẩn";
-        const statusClass = room.status === "AVAILABLE" ? "badge-available" : "badge-rented";
-        const amenities = splitText(room.amenities, []).slice(0, 2);
+        const amenities = splitText(room.amenities, []).filter((item) => !isDeprecatedAmenity(item)).slice(0, 2);
         const rating = Number(room.averageRating || 0);
         const reviewCount = Number(room.reviewCount || 0);
 
@@ -578,7 +599,6 @@
             <article class="detail-related-card">
                 <a class="detail-related-media" href="room-detail.html?id=${room.id}">
                     <img src="${escapeAttribute(image)}" alt="${escapeAttribute(room.title)}">
-                    <span class="badge ${statusClass}">${statusText}</span>
                 </a>
                 <div class="detail-related-body">
                     <h3><a href="room-detail.html?id=${room.id}">${escapeHtml(room.title)}</a></h3>
@@ -587,7 +607,7 @@
                         <span>${formatArea(room.area)}</span>
                         <span>${escapeHtml(room.furnitureType || "Đang cập nhật")}</span>
                     </div>
-                    ${amenities.length ? `<div class="detail-related-tags">${amenities.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>` : ""}
+                    ${amenities.length ? `<div class="detail-related-tags">${amenities.map((item) => amenityChip(item)).join("")}</div>` : ""}
                     <div class="detail-related-bottom">
                         <div>
                             <span>Từ</span>
@@ -663,6 +683,10 @@
         const appointmentForm = document.querySelector("[data-appointment-form]");
         const openAppointmentButton = document.querySelector("[data-open-appointment-form]");
         const closeAppointmentButtons = document.querySelectorAll("[data-close-appointment-form]");
+        const reportModal = document.querySelector("[data-report-modal]");
+        const reportForm = document.querySelector("[data-report-form]");
+        const openReportButton = document.querySelector("[data-open-report-form]");
+        const closeReportButtons = document.querySelectorAll("[data-close-report-form]");
         let rentalDraft = null;
 
         openButton?.addEventListener("click", async () => {
@@ -695,12 +719,28 @@
             appointmentForm?.elements.fullName?.focus();
         });
 
+        openReportButton?.addEventListener("click", () => {
+            const auth = window.NhaTroAuth;
+            if (!auth?.token?.()) {
+                window.location.href = `login.html?next=${encodeURIComponent(`room-detail.html?id=${room.id}`)}`;
+                return;
+            }
+            showReportMessage("", "");
+            reportModal.hidden = false;
+            document.body.classList.add("modal-open");
+            reportForm?.elements.reason?.focus();
+        });
+
         closeButtons.forEach((button) => {
             button.addEventListener("click", () => closeRentalModal());
         });
 
         closeAppointmentButtons.forEach((button) => {
             button.addEventListener("click", () => closeAppointmentModal());
+        });
+
+        closeReportButtons.forEach((button) => {
+            button.addEventListener("click", () => closeReportModal());
         });
 
         modal?.addEventListener("click", (event) => {
@@ -712,6 +752,12 @@
         appointmentModal?.addEventListener("click", (event) => {
             if (event.target === appointmentModal) {
                 closeAppointmentModal();
+            }
+        });
+
+        reportModal?.addEventListener("click", (event) => {
+            if (event.target === reportModal) {
+                closeReportModal();
             }
         });
 
@@ -801,6 +847,33 @@
                 }, 900);
             } catch (error) {
                 showAppointmentMessage("error", error.message);
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+
+        reportForm?.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const reason = reportForm.elements.reason.value.trim();
+            if (reason.length < 10) {
+                showReportMessage("error", "Vui lòng mô tả vi phạm ít nhất 10 ký tự.");
+                return;
+            }
+
+            const submitButton = reportForm.querySelector("button[type='submit']");
+            submitButton.disabled = true;
+            showReportMessage("info", "Đang gửi báo cáo vi phạm...");
+
+            try {
+                await window.NhaTroAuth.api("/api/violation-reports", {
+                    method: "POST",
+                    body: JSON.stringify({ roomId: Number(room.id), reason })
+                });
+                showReportMessage("success", "Đã gửi báo cáo vi phạm. Quản trị viên sẽ kiểm tra và xử lý.");
+                reportForm.reset();
+                setTimeout(() => closeReportModal(), 900);
+            } catch (error) {
+                showReportMessage("error", error.message);
             } finally {
                 submitButton.disabled = false;
             }
@@ -918,6 +991,23 @@
             modal.hidden = true;
         }
         document.body.classList.remove("modal-open");
+    }
+
+    function closeReportModal() {
+        const modal = document.querySelector("[data-report-modal]");
+        if (modal) {
+            modal.hidden = true;
+        }
+        document.body.classList.remove("modal-open");
+    }
+
+    function showReportMessage(type, message) {
+        const node = document.querySelector("[data-report-message]");
+        if (!node) {
+            return;
+        }
+        node.className = type ? `form-message ${type}` : "form-message";
+        node.textContent = message || "";
     }
 
     function collectRentalDraft(form, room) {
@@ -1112,14 +1202,69 @@
             `${districtFromAddress(room.address)}`,
             `${formatArea(room.area)}`,
             room.furnitureType || "Nội thất đang cập nhật",
-            "Wifi",
-            "An ninh 24/7",
             ...amenities.slice(0, 4)
         ];
         return [...new Set(chips.filter(Boolean))]
                 .slice(0, 9)
-                .map((item, index) => `<span>${chipIcon(index)}${escapeHtml(item)}</span>`)
+                .map((item, index) => `<span>${amenityIconHtml(item) || chipIcon(index)}${escapeHtml(item)}</span>`)
                 .join("");
+    }
+
+    function amenityChip(item, className = "") {
+        const iconPath = amenityIcon(item);
+        const classAttr = className ? ` class="${className}"` : "";
+        const iconHtml = iconPath ? `<img class="amenity-icon" src="${iconPath}" alt="" aria-hidden="true">` : "";
+        return `<span${classAttr}>${iconHtml}${escapeHtml(item)}</span>`;
+    }
+
+    function amenityIconHtml(item) {
+        const iconPath = amenityIcon(item);
+        return iconPath ? `<img class="amenity-icon" src="${iconPath}" alt="" aria-hidden="true">` : "";
+    }
+
+    function amenityIcon(item) {
+        const normalized = normalizeAmenity(item);
+        const mapping = [
+            { keys: ["wifi", "wi fi", "internet"], file: "wi-fi.png" },
+            { keys: ["camera", "cam"], file: "security-camera.png" },
+            { keys: ["thang may"], file: "elevator.png" },
+            { keys: ["cho de xe", "giu xe", "de xe", "bai xe", "xe dap"], file: "bicycle.png" },
+            { keys: ["tu lanh"], file: "fridge.png" },
+            { keys: ["may lanh", "dieu hoa"], file: "air-conditioner.png" },
+            { keys: ["may say", "say quan ao"], file: "tumble-dry.png" },
+            { keys: ["may giat", "do gia dung"], file: "appliance.png" },
+            { keys: ["khoa van tay", "khoa cua"], file: "lock.png" },
+            { keys: ["an ninh", "bao ve"], file: "security.png" },
+            { keys: ["ban cong"], file: "balcony.png" },
+            { keys: ["gio giac"], file: "clock.png" },
+            { keys: ["giuong", "phong ngu"], file: "single-bed.png" },
+            { keys: ["tu quan ao"], file: "wardrobe.png" },
+            { keys: ["ban hoc", "ban lam viec"], file: "desk-chair.png" },
+            { keys: ["bep rieng", "nau an", "bep"], file: "kitchen.png" },
+            { keys: ["nong lanh", "binh nong lanh", "nuoc nong"], file: "water-boiler.png" },
+            { keys: ["ve sinh", "nha tam", "phong tam"], file: "bath.png" }
+        ];
+        const match = mapping.find((itemMap) => itemMap.keys.some((key) => normalized.includes(key)));
+        return match ? `assets/img/${match.file}` : "";
+    }
+
+    function normalizeAmenity(value) {
+        return String(value || "")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/đ/g, "d")
+                .replace(/Đ/g, "d")
+                .toLowerCase();
+    }
+
+    function isDeprecatedAmenity(item) {
+        const normalized = normalizeAmenity(item);
+        return [
+            "cho de xe",
+            "may giat chung",
+            "internet toc do cao",
+            "gio giac tu do"
+        ].includes(normalized);
     }
 
     function videoBlock(videos) {
@@ -1142,9 +1287,14 @@
         `;
     }
 
-    function initDetailMap(room) {
+    async function initDetailMap(room) {
         const mapNode = document.querySelector("#detailMap");
-        const point = roomPoint(room);
+        const point = await resolveRoomPoint(room);
+        if (point) {
+            room.latitude = point.lat;
+            room.longitude = point.lng;
+            updateMapCoordinateText(point);
+        }
         bindDetailDistanceTool(room, point);
 
         if (!mapNode) {
@@ -1165,7 +1315,7 @@
             mapNode.innerHTML = `
                 <div class="map-fallback">
                     <strong>Không tải được bản đồ tương tác.</strong>
-                    <a href="${escapeAttribute(mapUrl(room))}" target="_blank" rel="noopener">Mở Google Maps</a>
+                    <a href="${escapeAttribute(mapUrl(room))}" target="_blank" rel="noopener">Mở OpenStreetMap</a>
                 </div>
             `;
             return;
@@ -1287,6 +1437,76 @@
         return { label: room.title || "Phòng trọ", lat, lng };
     }
 
+    async function resolveRoomPoint(room) {
+        const storedPoint = roomPoint(room);
+        if (storedPoint) {
+            return storedPoint;
+        }
+
+        const point = await geocodeAddress(room?.address);
+        return point ? { label: room.title || "Phòng trọ", ...point } : null;
+    }
+
+    async function geocodeAddress(address) {
+        const key = normalizeAddress(address);
+        if (!key) {
+            return null;
+        }
+
+        const cache = readDetailGeocodeCache();
+        if (cache[key]) {
+            return cache[key];
+        }
+
+        try {
+            const response = await fetch(`/api/geocoding?address=${encodeURIComponent(address)}`, {
+                headers: { Accept: "application/json" }
+            });
+            const data = await response.json();
+            if (!response.ok || !data?.found) {
+                return null;
+            }
+
+            const point = { lat: Number(data.latitude), lng: Number(data.longitude) };
+            if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) {
+                return null;
+            }
+            cache[key] = point;
+            writeDetailGeocodeCache(cache);
+            return point;
+        } catch {
+            return null;
+        }
+    }
+
+    function normalizeAddress(address) {
+        return String(address || "").trim().replace(/\s+/g, " ").toLocaleLowerCase("vi-VN");
+    }
+
+    function readDetailGeocodeCache() {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(DETAIL_GEOCODE_CACHE_KEY) || "{}");
+            return parsed && typeof parsed === "object" ? parsed : {};
+        } catch {
+            return {};
+        }
+    }
+
+    function writeDetailGeocodeCache(cache) {
+        try {
+            localStorage.setItem(DETAIL_GEOCODE_CACHE_KEY, JSON.stringify(cache));
+        } catch {
+            // The map can still render without local cache.
+        }
+    }
+
+    function updateMapCoordinateText(point) {
+        const node = document.querySelector("[data-map-coordinate]");
+        if (node) {
+            node.textContent = `${formatCoordinate(point.lat)}, ${formatCoordinate(point.lng)}`;
+        }
+    }
+
     function parseLatLng(value) {
         const parts = String(value || "").split(",").map((item) => Number(item.trim()));
         if (parts.length !== 2 || parts.some((item) => !Number.isFinite(item))) {
@@ -1320,10 +1540,17 @@
     }
 
     function mapUrl(room) {
-        const query = room.latitude && room.longitude
-                ? `${room.latitude},${room.longitude}`
-                : room.address || "Hà Nội";
-        return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+        const point = roomPoint(room);
+        if (!point) {
+            return `https://www.openstreetmap.org/search?query=${encodeURIComponent(room.address || "Hà Nội")}`;
+        }
+
+        const delta = 0.01;
+        const left = point.lng - delta;
+        const right = point.lng + delta;
+        const bottom = point.lat - delta;
+        const top = point.lat + delta;
+        return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${point.lat}%2C${point.lng}`;
     }
 
     function mapDirectionsUrl(room, origin = null) {
@@ -1331,8 +1558,9 @@
         if (!destination) {
             return mapUrl(room);
         }
-        const originText = origin ? `${origin.lat},${origin.lng}` : "21.0285,105.8542";
-        return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originText)}&destination=${destination.lat},${destination.lng}`;
+        const originPoint = origin || { lat: 21.0285, lng: 105.8542 };
+        const route = `${originPoint.lat},${originPoint.lng};${destination.lat},${destination.lng}`;
+        return `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${encodeURIComponent(route)}`;
     }
 
     function tenantActionUrl(roomId, sectionId) {

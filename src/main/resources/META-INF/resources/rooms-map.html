@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bản đồ phòng trọ | Eleven</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="listing-page rooms-map-page">
+<header class="listing-header">
+    <div class="listing-header-inner">
+        <a class="listing-brand" href="index.html">
+            <img src="assets/img/logo-black.png" alt="ELEVEN">
+        </a>
+
+        <form class="listing-search-form" action="rooms-map.html">
+            <input type="search" name="keyword" placeholder="Tìm kiếm theo trường đại học, quận hoặc tên phòng">
+            <button type="submit" aria-label="Tìm kiếm">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+            </button>
+        </form>
+
+        <nav class="listing-header-actions" aria-label="Tiện ích">
+            <a class="listing-action-link" href="#mapHelp">
+                <img class="header-support-icon" src="assets/img/headphones.png" alt="" aria-hidden="true">
+                Hỗ trợ
+            </a>
+            <a class="listing-action-link" href="#">
+                <img class="header-translate-icon" src="assets/img/translate.png" alt="Ngôn ngữ">
+                VN
+            </a>
+            <a class="listing-login" href="login.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4v18h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+                Đăng nhập
+            </a>
+            <div class="home-account-group listing-account-group" hidden>
+                <a class="home-user-btn" href="profile.html" aria-label="Tài khoản">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <form class="listing-filter-bar map-filter-bar" action="rooms-map.html">
+        <button class="filter-chip icon-chip" type="button" aria-label="Sắp xếp">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h12"/><path d="M4 12h8"/><path d="M4 17h5"/></svg>
+            Sắp xếp
+        </button>
+        <select class="filter-chip" name="location" aria-label="Địa phương">
+            <option value="">Địa phương</option>
+            <option>Cầu Giấy</option>
+            <option>Đống Đa</option>
+            <option>Hai Bà Trưng</option>
+            <option>Thanh Xuân</option>
+            <option>Tây Hồ</option>
+            <option>Nam Từ Liêm</option>
+            <option>Hà Đông</option>
+            <option>Hoàng Mai</option>
+            <option>Ba Đình</option>
+            <option>Long Biên</option>
+        </select>
+        <select class="filter-chip" name="maxPrice" aria-label="Ngân sách">
+            <option value="">Ngân sách</option>
+            <option value="3000000">Dưới 3 triệu</option>
+            <option value="5000000">Dưới 5 triệu</option>
+            <option value="7000000">Dưới 7 triệu</option>
+        </select>
+        <select class="filter-chip" name="minArea" aria-label="Diện tích">
+            <option value="">Diện tích</option>
+            <option value="20">Từ 20 m2</option>
+            <option value="30">Từ 30 m2</option>
+            <option value="40">Từ 40 m2</option>
+        </select>
+        <select class="filter-chip" name="stayDuration" aria-label="Thời gian lưu trú">
+            <option value="">Thời gian lưu trú</option>
+            <option value="under6">Dưới 6 tháng</option>
+            <option value="6to12">6 - 12 tháng</option>
+            <option value="over12">Trên 12 tháng</option>
+        </select>
+        <select class="filter-chip" name="furnitureType" aria-label="Nội thất">
+            <option value="">Loại phòng</option>
+            <option>Đầy đủ</option>
+            <option>Cơ bản</option>
+            <option>Không nội thất</option>
+        </select>
+        <button class="filter-chip" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7z"/></svg>
+            Bộ lọc
+        </button>
+        <a class="clear-filter-link" href="rooms-map.html">Xóa tất cả</a>
+    </form>
+</header>
+
+<main class="rooms-map-main">
+    <section class="rooms-map-list-panel">
+        <div class="rooms-map-list-head">
+            <a class="rooms-map-back" href="rooms.html">Danh sách phòng</a>
+            <h1>Phòng trọ tại Hà Nội</h1>
+            <p><strong data-map-count>0</strong> phòng được tìm thấy. Các marker giá tiền trên bản đồ được đặt theo tọa độ thực tế của địa chỉ phòng.</p>
+            <span data-map-status>Đang tải dữ liệu phòng...</span>
+        </div>
+        <div class="rooms-map-list" data-map-room-list></div>
+    </section>
+
+    <section class="rooms-map-canvas-panel">
+        <div id="roomsMapFull" class="rooms-map-canvas" aria-label="Bản đồ phòng trọ"></div>
+        <a class="rooms-map-close" href="rooms.html">Đóng bản đồ</a>
+        <div class="rooms-map-note" id="mapHelp">Bản đồ dùng OpenStreetMap. Tọa độ ưu tiên lấy từ database, phòng thiếu tọa độ sẽ được tìm theo địa chỉ cụ thể rồi lưu lại khi chủ trọ tạo hoặc sửa phòng.</div>
+    </section>
+</main>
+
+<script src="assets/js/auth.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/rooms-map.js"></script>
+</body>
+</html>

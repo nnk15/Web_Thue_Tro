@@ -2,11 +2,74 @@
     const RECENT_SEARCHES_KEY = "nhatro.recentSearches";
     const MAX_RECENT_SEARCHES = 6;
     const FEATURED_ROOM_LIMIT = 5;
+    const HANOI_AREAS = [
+        "Cầu Giấy",
+        "Đống Đa",
+        "Hai Bà Trưng",
+        "Thanh Xuân",
+        "Tây Hồ",
+        "Nam Từ Liêm",
+        "Hà Đông",
+        "Hoàng Mai",
+        "Ba Đình",
+        "Long Biên",
+        "Bắc Từ Liêm",
+        "Hoàn Kiếm",
+        "Gia Lâm",
+        "Đông Anh",
+        "Hoài Đức",
+        "Thanh Trì",
+        "Sóc Sơn",
+        "Sơn Tây",
+        "Ba Vì",
+        "Chương Mỹ",
+        "Đan Phượng",
+        "Mê Linh",
+        "Mỹ Đức",
+        "Phú Xuyên",
+        "Phúc Thọ",
+        "Quốc Oai",
+        "Thạch Thất",
+        "Thanh Oai",
+        "Thường Tín",
+        "Ứng Hòa"
+    ];
+    const FEATURED_SEARCH_AREAS = [
+        "Cầu Giấy",
+        "Đống Đa",
+        "Hai Bà Trưng",
+        "Thanh Xuân",
+        "Tây Hồ",
+        "Nam Từ Liêm",
+        "Hà Đông",
+        "Hoàng Mai",
+        "Ba Đình",
+        "Long Biên",
+        "Bắc Từ Liêm",
+        "Hoàn Kiếm"
+    ];
+    const POPULAR_AREA_IMAGES = [
+        "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1524230572899-a752b3835840?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=700&q=85",
+        "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=700&q=85"
+    ];
     const carousel = document.querySelector(".property-carousel");
     const proofNumbers = document.querySelectorAll(".home-proof-item h2");
-    const areaCards = document.querySelectorAll("[data-popular-area]");
     const searchWrap = document.querySelector(".home-search-wrap");
     const searchInput = document.querySelector("#home-search-input");
+    const headerSearchForm = document.querySelector(".home-header-search");
+    const headerSearchInput = headerSearchForm?.querySelector('input[type="search"]');
     const searchSuggestions = document.querySelector("#home-search-suggestions");
     const recentSearchesContainer = document.querySelector("[data-recent-searches]");
     const popularAreaCarousel = document.querySelector("[data-popular-area-carousel]");
@@ -62,12 +125,12 @@
             proofNumbers[0].textContent = `${formatCompact(totalRooms)}+ phòng`;
         }
         if (proofNumbers[2]) {
-            proofNumbers[2].textContent = "12+ quận Hà Nội";
+            proofNumbers[2].textContent = `${HANOI_AREAS.length} quận/huyện Hà Nội`;
         }
     }
 
     async function loadPopularAreaCounts() {
-        await Promise.all(Array.from(areaCards).map(async (card) => {
+        await Promise.all(Array.from(document.querySelectorAll("[data-popular-area]")).map(async (card) => {
             const area = card.dataset.popularArea;
             const countTarget = card.querySelector("[data-area-count]");
             if (!area || !countTarget) {
@@ -85,6 +148,60 @@
                 countTarget.textContent = "Chưa có dữ liệu";
             }
         }));
+    }
+
+    function hydrateHanoiAreas() {
+        hydrateSearchAreaSuggestions();
+        hydratePopularAreaCards();
+    }
+
+    function hydrateSearchAreaSuggestions() {
+        if (!searchSuggestions) {
+            return;
+        }
+
+        const tabs = searchSuggestions.querySelector(".suggestion-tabs");
+        FEATURED_SEARCH_AREAS.forEach((area) => appendSuggestionButton(tabs, area));
+
+        const areaList = Array.from(searchSuggestions.querySelectorAll(".suggestion-section .suggestion-list:not(.compact)"))
+                .find((list) => list.querySelector('[data-search-suggestion="Cầu Giấy"]'));
+        FEATURED_SEARCH_AREAS.forEach((area) => appendSuggestionButton(areaList, area));
+    }
+
+    function appendSuggestionButton(container, area) {
+        if (!container || hasDataValue(container, "searchSuggestion", area)) {
+            return;
+        }
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.searchSuggestion = area;
+        button.dataset.searchType = "location";
+        button.textContent = area;
+        container.appendChild(button);
+    }
+
+    function hydratePopularAreaCards() {
+        if (!popularAreaCarousel) {
+            return;
+        }
+
+        HANOI_AREAS.forEach((area, index) => {
+            if (hasDataValue(popularAreaCarousel, "popularArea", area)) {
+                return;
+            }
+
+            const card = document.createElement("a");
+            card.className = "popular-area-card";
+            card.href = `rooms.html?location=${encodeURIComponent(area)}`;
+            card.dataset.popularArea = area;
+            const image = POPULAR_AREA_IMAGES[index % POPULAR_AREA_IMAGES.length];
+            card.innerHTML = `
+                <img src="${escapeAttribute(image)}" alt="Phòng trọ ${escapeAttribute(area)}">
+                <span>${escapeHtml(area)}</span>
+            `;
+            popularAreaCarousel.appendChild(card);
+        });
     }
 
     function renderRooms(rooms, area = selectedArea) {
@@ -225,20 +342,40 @@
         }
 
         popularAreaNext?.addEventListener("click", () => {
-            const atEnd = popularAreaCarousel.scrollLeft + popularAreaCarousel.clientWidth >= popularAreaCarousel.scrollWidth - 12;
             popularAreaCarousel.scrollBy({
-                left: atEnd ? -popularAreaCarousel.scrollWidth : Math.round(popularAreaCarousel.clientWidth * 0.82),
+                left: Math.round(popularAreaCarousel.clientWidth * 0.82),
                 behavior: "smooth"
             });
         });
 
         popularAreaPrev?.addEventListener("click", () => {
-            const atStart = popularAreaCarousel.scrollLeft <= 12;
             popularAreaCarousel.scrollBy({
-                left: atStart ? popularAreaCarousel.scrollWidth : -Math.round(popularAreaCarousel.clientWidth * 0.82),
+                left: -Math.round(popularAreaCarousel.clientWidth * 0.82),
                 behavior: "smooth"
             });
         });
+
+        popularAreaCarousel.addEventListener("scroll", updatePopularAreaButtons, { passive: true });
+        window.addEventListener("resize", updatePopularAreaButtons);
+        requestAnimationFrame(updatePopularAreaButtons);
+    }
+
+    function updatePopularAreaButtons() {
+        if (!popularAreaCarousel) {
+            return;
+        }
+
+        const maxScroll = Math.max(0, popularAreaCarousel.scrollWidth - popularAreaCarousel.clientWidth);
+        const atStart = popularAreaCarousel.scrollLeft <= 4;
+        const atEnd = popularAreaCarousel.scrollLeft >= maxScroll - 4;
+        if (popularAreaPrev) {
+            popularAreaPrev.hidden = atStart || maxScroll <= 4;
+            popularAreaPrev.disabled = atStart || maxScroll <= 4;
+        }
+        if (popularAreaNext) {
+            popularAreaNext.hidden = atEnd || maxScroll <= 4;
+            popularAreaNext.disabled = atEnd || maxScroll <= 4;
+        }
     }
 
     function updatePropertyDots(photo, activeIndex) {
@@ -254,19 +391,27 @@
             return;
         }
 
-        const show = () => {
+        let activeSearchInput = searchInput;
+
+        const show = (input = searchInput) => {
+            activeSearchInput = input;
             renderRecentSearches();
+            positionSearchSuggestions(input);
             searchSuggestions.hidden = false;
-            searchInput.setAttribute("aria-expanded", "true");
+            input.setAttribute("aria-expanded", "true");
         };
         const hide = () => {
             searchSuggestions.hidden = true;
             searchInput.setAttribute("aria-expanded", "false");
+            headerSearchInput?.setAttribute("aria-expanded", "false");
+            resetSearchSuggestionsPosition();
         };
 
-        searchInput.addEventListener("focus", show);
-        searchInput.addEventListener("click", show);
-        searchWrap.addEventListener("click", (event) => {
+        searchInput.addEventListener("focus", () => show(searchInput));
+        searchInput.addEventListener("click", () => show(searchInput));
+        headerSearchInput?.addEventListener("focus", () => show(headerSearchInput));
+        headerSearchInput?.addEventListener("click", () => show(headerSearchInput));
+        searchSuggestions.addEventListener("click", (event) => {
             const button = event.target.closest("[data-search-suggestion]");
             if (!button) {
                 return;
@@ -274,7 +419,7 @@
 
             const value = button.dataset.searchSuggestion || button.textContent.trim();
             const type = button.dataset.searchType || "keyword";
-            searchInput.value = value;
+            activeSearchInput.value = value;
             rememberSearch(value, type);
             goToSearch(value, type);
         });
@@ -290,7 +435,9 @@
         });
 
         document.addEventListener("click", (event) => {
-            if (!searchWrap.contains(event.target)) {
+            if (!searchWrap.contains(event.target)
+                    && !searchSuggestions.contains(event.target)
+                    && !headerSearchForm?.contains(event.target)) {
                 hide();
             }
         });
@@ -298,11 +445,44 @@
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 hide();
-                searchInput.blur();
+                activeSearchInput.blur();
             }
         });
 
+        window.addEventListener("resize", () => {
+            if (!searchSuggestions.hidden) {
+                positionSearchSuggestions(activeSearchInput);
+            }
+        });
+        window.addEventListener("scroll", () => {
+            if (!searchSuggestions.hidden) {
+                positionSearchSuggestions(activeSearchInput);
+            }
+        }, { passive: true });
+
         renderRecentSearches();
+    }
+
+    function positionSearchSuggestions(input) {
+        if (input !== headerSearchInput || !headerSearchForm) {
+            resetSearchSuggestionsPosition();
+            return;
+        }
+
+        const rect = headerSearchForm.getBoundingClientRect();
+        searchSuggestions.classList.add("is-header-panel");
+        searchSuggestions.style.top = `${rect.bottom + 8}px`;
+        searchSuggestions.style.left = `${rect.left}px`;
+        searchSuggestions.style.right = "auto";
+        searchSuggestions.style.width = `${rect.width}px`;
+    }
+
+    function resetSearchSuggestionsPosition() {
+        searchSuggestions.classList.remove("is-header-panel");
+        searchSuggestions.style.removeProperty("top");
+        searchSuggestions.style.removeProperty("left");
+        searchSuggestions.style.removeProperty("right");
+        searchSuggestions.style.removeProperty("width");
     }
 
     function bindPropertyTabs() {
@@ -500,6 +680,16 @@
         return escapeHtml(value);
     }
 
+    function hasDataValue(container, key, value) {
+        return Array.from(container.querySelectorAll(`[data-${dataAttributeName(key)}]`))
+                .some((item) => item.dataset[key] === value);
+    }
+
+    function dataAttributeName(key) {
+        return String(key).replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+    }
+
+    hydrateHanoiAreas();
     bindFavoriteButtons();
     bindPropertyGallery();
     bindPopularAreaCarousel();

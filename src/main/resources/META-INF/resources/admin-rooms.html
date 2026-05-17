@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm duyệt tin đăng | One Room One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="admin-page">
+<main class="dashboard-shell admin-shell">
+    <aside class="sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a href="admin-dashboard.html">Thống kê</a>
+            <a href="admin-users.html">Người dùng</a>
+            <a href="admin-landlords.html">Chủ trọ</a>
+            <a class="active" href="admin-rooms.html">Kiểm duyệt tin</a>
+            <a href="admin-reports.html">Báo cáo vi phạm</a>
+            <a href="admin-statistics.html">Thống kê chi tiết</a>
+            <a href="profile.html">Tài khoản</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <div class="dashboard-top">
+            <div>
+                <h1>Kiểm duyệt tin đăng</h1>
+                <p>Duyệt hoặc từ chối các phòng trọ đang chờ kiểm duyệt.</p>
+            </div>
+        </div>
+
+        <section class="data-panel admin-data-panel" id="pending-rooms">
+            <div class="panel-head">
+                <div>
+                    <h2>Tin chờ duyệt</h2>
+                    <p class="panel-note">Chỉ các tin đã duyệt mới hiển thị công khai cho người thuê.</p>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Tin đăng</th>
+                        <th>Chủ trọ</th>
+                        <th>Giá</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td class="muted-cell" colspan="5">Đang tải tin chờ duyệt...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/admin-dashboard.js"></script>
+</body>
+</html>

@@ -1,14 +1,50 @@
 (() => {
     const RECENT_SEARCHES_KEY = "nhatro.recentSearches";
     const MAX_RECENT_SEARCHES = 6;
+    const PAGE_SIZE = 10;
     const grid = document.querySelector("#roomsGrid");
     const summary = document.querySelector("#roomResultsSummary");
     const countNode = document.querySelector("#listingRoomCount");
+    const paginationNode = document.querySelector("[data-rooms-pagination]");
     const searchForm = document.querySelector(".listing-search-form") || document.querySelector(".page-title .search-box");
     const filterForm = document.querySelector(".listing-filter-bar") || document.querySelector(".filter-panel form");
     const roomsMapNode = document.querySelector("#roomsMap");
     const mapSummaryNode = document.querySelector("#listingMapSummary");
     const mapRadiusSelect = document.querySelector("[data-map-radius]");
+    const mapViewLink = document.querySelector("[data-open-map-view]");
+    const breadcrumbLocation = document.querySelector("#listingBreadcrumbLocation");
+    const HANOI_AREAS = [
+        "Cầu Giấy",
+        "Đống Đa",
+        "Hai Bà Trưng",
+        "Thanh Xuân",
+        "Tây Hồ",
+        "Nam Từ Liêm",
+        "Hà Đông",
+        "Hoàng Mai",
+        "Ba Đình",
+        "Long Biên",
+        "Bắc Từ Liêm",
+        "Hoàn Kiếm",
+        "Gia Lâm",
+        "Đông Anh",
+        "Hoài Đức",
+        "Thanh Trì",
+        "Sóc Sơn",
+        "Sơn Tây",
+        "Ba Vì",
+        "Chương Mỹ",
+        "Đan Phượng",
+        "Mê Linh",
+        "Mỹ Đức",
+        "Phú Xuyên",
+        "Phúc Thọ",
+        "Quốc Oai",
+        "Thạch Thất",
+        "Thanh Oai",
+        "Thường Tín",
+        "Ứng Hòa"
+    ];
 
     if (!grid) {
         return;
@@ -52,6 +88,42 @@
                 element.value = params.get(element.name);
             });
         });
+        syncMapViewLink();
+        syncBreadcrumbLocation();
+    }
+
+    function populateLocationFilter() {
+        const locationSelect = filterForm?.querySelector('select[name="location"]');
+        if (!locationSelect) {
+            return;
+        }
+
+        const existing = new Set(Array.from(locationSelect.options).map((option) => searchKey(option.value || option.textContent)));
+        HANOI_AREAS.forEach((area) => {
+            if (existing.has(searchKey(area))) {
+                return;
+            }
+
+            const option = document.createElement("option");
+            option.value = area;
+            option.textContent = area;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    function syncMapViewLink() {
+        if (!mapViewLink) {
+            return;
+        }
+        const query = params.toString();
+        mapViewLink.href = query ? `rooms-map.html?${query}` : "rooms-map.html";
+    }
+
+    function syncBreadcrumbLocation() {
+        if (!breadcrumbLocation) {
+            return;
+        }
+        breadcrumbLocation.textContent = value("location") || "Địa Phương";
     }
 
     function collectFormParams(form) {
@@ -68,6 +140,7 @@
             }
         });
         next.delete("page");
+        next.delete("size");
         return next;
     }
 
@@ -90,6 +163,33 @@
             setFormValues();
             loadRooms();
         });
+    }
+
+    function bindPagination() {
+        paginationNode?.addEventListener("click", (event) => {
+            const button = event.target.closest("[data-rooms-page]");
+            if (!button || button.disabled) {
+                return;
+            }
+            goToRoomsPage(Number(button.dataset.roomsPage || 0));
+        });
+    }
+
+    function goToRoomsPage(page) {
+        const next = new URLSearchParams(window.location.search);
+        const nextPage = Math.max(0, Number(page || 0));
+        if (nextPage > 0) {
+            next.set("page", String(nextPage));
+        } else {
+            next.delete("page");
+        }
+        next.delete("size");
+        const query = next.toString();
+        window.history.pushState({}, "", query ? `${window.location.pathname}?${query}` : window.location.pathname);
+        syncParams(next);
+        setFormValues();
+        loadRooms();
+        document.querySelector(".listing-results-column")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function rememberSearchFromParams(nextParams) {
@@ -250,7 +350,6 @@
             "maxPrice",
             "minArea",
             "maxArea",
-            "status",
             "furnitureType"
         ].forEach((key) => {
             const paramValue = value(key);
@@ -258,8 +357,9 @@
                 apiParams.set(key, paramValue);
             }
         });
-        apiParams.set("page", value("page") || "0");
-        apiParams.set("size", value("size") || "50");
+        apiParams.set("page", String(currentPage()));
+        apiParams.set("size", String(PAGE_SIZE));
+        apiParams.set("status", "AVAILABLE");
         return `/api/rooms?${apiParams.toString()}`;
     }
 
@@ -281,29 +381,93 @@
         } catch (error) {
             summary.textContent = error.message;
             grid.innerHTML = `<div class="empty-state">Không thể tải danh sách phòng. Vui lòng kiểm tra backend và database.</div>`;
+            renderRoomsPagination(0);
             renderListingMap([]);
         }
     }
 
     function renderRooms(rooms, total) {
         currentRooms = rooms || [];
-        currentTotal = total || currentRooms.length;
+        currentTotal = Number(total || currentRooms.length || 0);
         if (countNode) {
-            countNode.textContent = total.toLocaleString("vi-VN");
+            countNode.textContent = currentTotal.toLocaleString("vi-VN");
         }
 
-        summary.textContent = total > 0
-                ? `Sinh sống và học tập tại Hà Nội thuận tiện hơn với ${total.toLocaleString("vi-VN")} phòng trọ, studio và căn hộ mini đã được kiểm duyệt.`
+        summary.textContent = currentTotal > 0
+                ? `Sinh sống và học tập tại Hà Nội thuận tiện hơn với ${currentTotal.toLocaleString("vi-VN")} phòng trọ, studio và căn hộ mini đã được kiểm duyệt.`
                 : "Không tìm thấy phòng phù hợp với bộ lọc hiện tại.";
 
         if (!rooms.length) {
-            grid.innerHTML = `<div class="empty-state">Thử đổi khu vực, khoảng giá hoặc trạng thái phòng.</div>`;
+            grid.innerHTML = `<div class="empty-state">Thử đổi khu vực, khoảng giá hoặc loại phòng.</div>`;
+            renderRoomsPagination(currentTotal);
             renderListingMap([]);
             return;
         }
 
         grid.innerHTML = rooms.map(roomCard).join("");
+        renderRoomsPagination(currentTotal);
         renderListingMap(rooms);
+    }
+
+    function renderRoomsPagination(total) {
+        if (!paginationNode) {
+            return;
+        }
+
+        const pageCount = Math.ceil(Number(total || 0) / PAGE_SIZE);
+        if (pageCount <= 1) {
+            paginationNode.innerHTML = "";
+            return;
+        }
+
+        const page = Math.min(currentPage(), pageCount - 1);
+        const items = paginationItems(page, pageCount).map((item) => {
+            if (item === "ellipsis") {
+                return `<span class="pagination-ellipsis">...</span>`;
+            }
+            return `
+                <button class="${item === page ? "active" : ""}" type="button" data-rooms-page="${item}" aria-label="Trang ${item + 1}">
+                    ${item + 1}
+                </button>
+            `;
+        }).join("");
+
+        paginationNode.innerHTML = `
+            <button type="button" data-rooms-page="${page - 1}" ${page === 0 ? "disabled" : ""}>Trước</button>
+            ${items}
+            <button type="button" data-rooms-page="${page + 1}" ${page >= pageCount - 1 ? "disabled" : ""}>Sau</button>
+        `;
+    }
+
+    function paginationItems(current, pageCount) {
+        if (pageCount <= 7) {
+            return Array.from({ length: pageCount }, (_, index) => index);
+        }
+
+        const pages = [];
+        let previous = -1;
+        for (let index = 0; index < pageCount; index += 1) {
+            const shouldShow = index === 0
+                    || index === pageCount - 1
+                    || Math.abs(index - current) <= 1
+                    || (current < 3 && index < 5)
+                    || (current > pageCount - 4 && index >= pageCount - 5);
+
+            if (!shouldShow) {
+                continue;
+            }
+            if (previous >= 0 && index - previous > 1) {
+                pages.push("ellipsis");
+            }
+            pages.push(index);
+            previous = index;
+        }
+        return pages;
+    }
+
+    function currentPage() {
+        const page = Number(value("page") || 0);
+        return Number.isFinite(page) && page > 0 ? Math.floor(page) : 0;
     }
 
     async function loadFavoriteRoomIds() {
@@ -327,9 +491,6 @@
         const image = images[0];
         const imageData = images.map(escapeAttribute).join("|");
         const mediaClass = images.length > 1 ? "listing-room-media" : "listing-room-media single-image";
-        const statusText = room.status === "AVAILABLE" ? "Còn trống" : room.status === "RENTED" ? "Đã thuê" : "Đang ẩn";
-        const statusClass = room.status === "AVAILABLE" ? "badge-available" : "badge-rented";
-        const amenities = splitAmenities(room.amenities).slice(0, 8);
         const rating = Number(room.averageRating || 0);
         const reviewCount = Number(room.reviewCount || 0);
         const ratingLabel = reviewCount > 0 ? rating.toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "Mới";
@@ -346,7 +507,6 @@
                     <a class="listing-room-image-link" href="room-detail.html?id=${room.id}">
                         <img src="${escapeAttribute(image)}" alt="${escapeAttribute(room.title)}">
                     </a>
-                    ${index === 0 ? `<span class="listing-room-badge">Món đồ của ngày</span>` : ""}
                     <button class="listing-gallery-arrow listing-gallery-prev" type="button" data-gallery-step="-1" aria-label="Ảnh trước">‹</button>
                     <button class="listing-gallery-arrow listing-gallery-next" type="button" data-gallery-step="1" aria-label="Ảnh tiếp theo">›</button>
                     <div class="listing-photo-dots">
@@ -360,7 +520,6 @@
                             <h2><a href="room-detail.html?id=${room.id}">${escapeHtml(room.title)}</a></h2>
                             <p>${escapeHtml(room.address)}</p>
                         </div>
-                        <span class="badge ${statusClass}">${statusText}</span>
                     </div>
 
                     <div class="listing-distance">
@@ -382,7 +541,7 @@
                     </div>
 
                     <div class="listing-amenities">
-                        ${amenities.map((item, amenityIndex) => `<span class="${amenityIndex === 0 ? "highlight" : ""}">${escapeHtml(item)}</span>`).join("")}
+                        ${furnitureChip(room.furnitureType)}
                     </div>
                 </div>
 
@@ -423,7 +582,7 @@
             roomsMapNode.innerHTML = `
                 <div class="map-fallback">
                     <strong>Không tải được bản đồ tương tác.</strong>
-                    <a href="https://www.google.com/maps/search/phòng+trọ+Hà+Nội" target="_blank" rel="noopener">Mở Google Maps</a>
+                    <a href="https://www.openstreetmap.org/search?query=ph%C3%B2ng%20tr%E1%BB%8D%20H%C3%A0%20N%E1%BB%99i" target="_blank" rel="noopener">Mở OpenStreetMap</a>
                 </div>
             `;
             updateMapSummary(points);
@@ -562,7 +721,67 @@
         if (!value) {
             return ["Đang cập nhật"];
         }
-        return value.split(",").map((item) => item.trim()).filter(Boolean);
+        return value.split(/[,;\n]/).map((item) => item.trim()).filter(Boolean);
+    }
+
+    function amenityChip(item, className = "") {
+        const iconPath = amenityIcon(item);
+        const classAttr = className ? ` class="${className}"` : "";
+        const iconHtml = iconPath ? `<img class="amenity-icon" src="${iconPath}" alt="" aria-hidden="true">` : "";
+        return `<span${classAttr}>${iconHtml}${escapeHtml(item)}</span>`;
+    }
+
+    function furnitureChip(value) {
+        return `<span class="highlight">${escapeHtml(furnitureLabel(value))}</span>`;
+    }
+
+    function furnitureLabel(value) {
+        const normalized = normalizeAmenity(value);
+        if (normalized.includes("khong")) {
+            return "Không nội thất";
+        }
+        if (normalized.includes("co ban")) {
+            return "Cơ bản";
+        }
+        if (normalized.includes("day du") || normalized.includes("full")) {
+            return "Đầy đủ";
+        }
+        return value || "Đang cập nhật";
+    }
+
+    function amenityIcon(item) {
+        const normalized = normalizeAmenity(item);
+        const mapping = [
+            { keys: ["wifi", "wi fi", "internet"], file: "wi-fi.png" },
+            { keys: ["camera", "cam"], file: "security-camera.png" },
+            { keys: ["thang may"], file: "elevator.png" },
+            { keys: ["cho de xe", "giu xe", "de xe", "bai xe", "xe dap"], file: "bicycle.png" },
+            { keys: ["tu lanh"], file: "fridge.png" },
+            { keys: ["may lanh", "dieu hoa"], file: "air-conditioner.png" },
+            { keys: ["may say", "say quan ao"], file: "tumble-dry.png" },
+            { keys: ["may giat", "do gia dung"], file: "appliance.png" },
+            { keys: ["khoa van tay", "khoa cua"], file: "lock.png" },
+            { keys: ["an ninh", "bao ve"], file: "security.png" },
+            { keys: ["ban cong"], file: "balcony.png" },
+            { keys: ["gio giac"], file: "clock.png" },
+            { keys: ["giuong", "phong ngu"], file: "single-bed.png" },
+            { keys: ["tu quan ao"], file: "wardrobe.png" },
+            { keys: ["ban hoc", "ban lam viec"], file: "desk-chair.png" },
+            { keys: ["bep rieng", "nau an", "bep"], file: "kitchen.png" },
+            { keys: ["nong lanh", "binh nong lanh", "nuoc nong"], file: "water-boiler.png" },
+            { keys: ["ve sinh", "nha tam", "phong tam"], file: "bath.png" }
+        ];
+        const match = mapping.find((itemMap) => itemMap.keys.some((key) => normalized.includes(key)));
+        return match ? `assets/img/${match.file}` : "";
+    }
+
+    function normalizeAmenity(value) {
+        return String(value || "")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/đ/g, "d")
+                .replace(/Đ/g, "d")
+                .toLowerCase();
     }
 
     function districtFromAddress(address) {
@@ -596,8 +815,10 @@
         return escapeHtml(value);
     }
 
+    populateLocationFilter();
     setFormValues();
     bindForms();
+    bindPagination();
     bindFavoriteButtons();
     bindImageCarousel();
     bindMapSearchControls();

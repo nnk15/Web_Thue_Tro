@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý chủ trọ | One Room One Love</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="admin-page">
+<main class="dashboard-shell admin-shell">
+    <aside class="sidebar">
+        <a class="logo" href="index.html">
+            <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
+        </a>
+        <nav class="side-nav">
+            <a href="admin-dashboard.html">Thống kê</a>
+            <a href="admin-users.html">Người dùng</a>
+            <a class="active" href="admin-landlords.html">Chủ trọ</a>
+            <a href="admin-rooms.html">Kiểm duyệt tin</a>
+            <a href="admin-reports.html">Báo cáo vi phạm</a>
+            <a href="admin-statistics.html">Thống kê chi tiết</a>
+            <a href="profile.html">Tài khoản</a>
+        </nav>
+    </aside>
+
+    <section class="dashboard-main">
+        <div class="dashboard-top">
+            <div>
+                <h1>Quản lý chủ trọ</h1>
+                <p>Theo dõi chủ trọ, số phòng đang quản lý và tin chờ duyệt.</p>
+            </div>
+        </div>
+
+        <section class="data-panel admin-data-panel" id="landlords">
+            <div class="panel-head">
+                <div>
+                    <h2>Danh sách chủ trọ</h2>
+                    <p class="panel-note">Khóa hoặc mở khóa tài khoản chủ trọ khi cần xử lý vi phạm.</p>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Chủ trọ</th>
+                        <th>Số phòng</th>
+                        <th>Tin chờ duyệt</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td class="muted-cell" colspan="5">Đang tải chủ trọ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/admin-dashboard.js"></script>
+</body>
+</html>

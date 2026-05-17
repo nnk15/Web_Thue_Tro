@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thống kê quản trị | One Room One Love</title>
+    <title>Báo cáo vi phạm | One Room One Love</title>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body class="admin-page">
@@ -13,11 +13,11 @@
             <img class="brand-logo-img" src="assets/img/logo.png" alt="One Room. One Love">
         </a>
         <nav class="side-nav">
-            <a class="active" href="admin-dashboard.html">Thống kê</a>
+            <a href="admin-dashboard.html">Thống kê</a>
             <a href="admin-users.html">Người dùng</a>
             <a href="admin-landlords.html">Chủ trọ</a>
             <a href="admin-rooms.html">Kiểm duyệt tin</a>
-            <a href="admin-reports.html">Báo cáo vi phạm</a>
+            <a class="active" href="admin-reports.html">Báo cáo vi phạm</a>
             <a href="admin-statistics.html">Thống kê chi tiết</a>
             <a href="profile.html">Tài khoản</a>
         </nav>
@@ -26,21 +26,20 @@
     <section class="dashboard-main">
         <div class="dashboard-top">
             <div>
-                <h1>Dashboard quản trị viên</h1>
-                <p>Theo dõi nhanh tình hình người dùng, chủ trọ, phòng đang đăng và tin chờ duyệt.</p>
+                <h1>Báo cáo vi phạm</h1>
+                <p>Xử lý các báo cáo từ người thuê và kiểm tra tin đăng có vấn đề.</p>
             </div>
-            <a class="btn btn-outline" href="index.html">Về trang chủ</a>
         </div>
 
-        <section class="admin-section" aria-labelledby="statistics-title">
+        <section class="data-panel admin-data-panel" id="reports">
             <div class="panel-head">
-                <h2 id="statistics-title">Thống kê tổng quan</h2>
+                <div>
+                    <h2>Danh sách báo cáo</h2>
+                    <p class="panel-note">Báo cáo mới sẽ có chấm đỏ trên menu cho đến khi được xử lý.</p>
+                </div>
             </div>
-            <div class="stats-grid" id="statistics">
-                <div class="metric"><span>Người dùng</span><strong>0</strong></div>
-                <div class="metric"><span>Chủ trọ</span><strong>0</strong></div>
-                <div class="metric"><span>Phòng đang đăng</span><strong>0</strong></div>
-                <div class="metric"><span>Tin chờ duyệt</span><strong>0</strong></div>
+            <div class="compact-list">
+                <div class="empty-state">Đang tải báo cáo...</div>
             </div>
         </section>
     </section>

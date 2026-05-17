@@ -14,19 +14,19 @@
             <img class="brand-logo-img home-logo-black" src="assets/img/logo-black.png" alt="ELEVEN">
         </a>
         <form class="home-header-search" action="rooms.html">
-            <input type="search" name="keyword" placeholder="Tìm kiếm theo trường đại học, quận hoặc tên phòng">
+            <input type="search" name="keyword" placeholder="Tìm phòng trọ theo Quận huyện, Đại học hoặc Địa điểm">
             <button type="submit" aria-label="Tìm kiếm">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
             </button>
         </form>
         <div class="home-actions">
             <a class="home-action-link" href="#footer">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0v4a3 3 0 0 1-3 3h-2"/><path d="M6 13v5"/><path d="M18 13v5"/></svg>
+                <img class="header-support-icon" src="assets/img/headphones.png" alt="" aria-hidden="true">
                 <span>Hỗ trợ</span>
                 <svg class="home-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </a>
             <a class="home-action-link home-language" href="#">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c3 3 3 15 0 18"/><path d="M12 3c-3 3-3 15 0 18"/></svg>
+                <img class="header-translate-icon" src="assets/img/translate.png" alt="Ngôn ngữ">
                 <span>VN</span>
             </a>
             <a class="home-login" href="login.html">
@@ -140,39 +140,6 @@
         </div>
     </section>
 
-    <section class="home-proof">
-        <div class="container home-proof-grid">
-            <article class="home-proof-item">
-                <div class="home-proof-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M9 22h30v16H9z"/><path d="M14 14h20v8H14z"/><path d="M9 30h30"/><path d="M17 22v16M31 22v16"/></svg>
-                </div>
-                <h2>20K+ phòng</h2>
-                <p>Nhiều lựa chọn phòng trọ, căn hộ mini và studio cho sinh viên, người đi làm.</p>
-            </article>
-            <article class="home-proof-item">
-                <div class="home-proof-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 7 5 17l19 10 19-10z"/><path d="M13 22v8c4 5 18 5 22 0v-8"/><path d="M40 18v13"/></svg>
-                </div>
-                <h2>300+ khu vực</h2>
-                <p>Tìm phòng gần các trường đại học, khu công nghiệp và trung tâm thành phố.</p>
-            </article>
-            <article class="home-proof-item">
-                <div class="home-proof-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17"/><path d="M8 24h32"/><path d="M24 7c6 6 6 28 0 34"/><path d="M24 7c-6 6-6 28 0 34"/></svg>
-                </div>
-                <h2>12+ quận Hà Nội</h2>
-                <p>Tập trung vào các khu vực thuê trọ phổ biến quanh trường đại học, văn phòng và tuyến metro.</p>
-            </article>
-            <article class="home-rating-card">
-                <strong>Đánh giá người dùng</strong>
-                <div class="home-stars" aria-label="Đánh giá 5 sao">
-                    <span></span><span></span><span></span><span></span><span></span>
-                </div>
-                <p>Điểm hài lòng <b>4.8/5</b> từ người thuê và chủ trọ.</p>
-            </article>
-        </div>
-    </section>
-
     <section class="home-popular" id="popular-areas">
         <div class="container">
             <div class="home-section-head">
@@ -181,7 +148,7 @@
             </div>
 
             <div class="popular-area-carousel-wrap">
-                <button class="popular-area-prev" type="button" data-popular-area-prev aria-label="Xem khu vực phía trước">
+                <button class="popular-area-prev" type="button" data-popular-area-prev aria-label="Xem khu vực phía trước" hidden>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
                 </button>
                 <div class="popular-area-carousel" data-popular-area-carousel aria-label="Khu vực phòng trọ nổi tiếng">
@@ -245,6 +212,49 @@
                 <button class="popular-area-next" type="button" data-popular-area-next aria-label="Xem thêm khu vực">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
                 </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="booking-benefits" aria-labelledby="booking-benefits-title">
+        <div class="container booking-benefits-container">
+            <div class="booking-benefits-head">
+                <h2 id="booking-benefits-title">Đặt phòng trọ lý tưởng của bạn</h2>
+                <p>Giúp bạn tìm và giữ chỗ phòng trọ phù hợp cho những năm học tập, làm việc an tâm hơn.</p>
+            </div>
+
+            <div class="booking-benefits-grid">
+                <article class="booking-benefit-item">
+                    <div class="booking-benefit-icon">
+                        <img src="assets/img/online-shopping.png" alt="" aria-hidden="true">
+                    </div>
+                    <h3>Đặt phòng nhanh và dễ dàng</h3>
+                    <p>Tiết kiệm thời gian khi tìm phòng, gửi yêu cầu thuê và đặt lịch xem phòng chỉ trong vài bước.</p>
+                </article>
+
+                <article class="booking-benefit-item">
+                    <div class="booking-benefit-icon">
+                        <img src="assets/img/monetary-system.png" alt="" aria-hidden="true">
+                    </div>
+                    <h3>Giá thuê minh bạch</h3>
+                    <p>Giá thuê, tiền cọc và diện tích được hiển thị rõ ràng để bạn dễ so sánh trước khi quyết định.</p>
+                </article>
+
+                <article class="booking-benefit-item">
+                    <div class="booking-benefit-icon">
+                        <img src="assets/img/care.png" alt="" aria-hidden="true">
+                    </div>
+                    <h3>Hỗ trợ 24/7</h3>
+                    <p>Khi có thắc mắc về phòng, yêu cầu thuê hoặc lịch xem, hệ thống luôn giúp bạn theo dõi trạng thái.</p>
+                </article>
+
+                <article class="booking-benefit-item">
+                    <div class="booking-benefit-icon">
+                        <img src="assets/img/shield.png" alt="" aria-hidden="true">
+                    </div>
+                    <h3>Thông tin đã xác thực 100%</h3>
+                    <p>Thông tin phòng được kiểm duyệt trước khi hiển thị để bạn yên tâm hơn khi tìm và thuê trọ.</p>
+                </article>
             </div>
         </div>
     </section>
@@ -378,6 +388,60 @@
                         </a>
                     </article>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="booking-steps" aria-labelledby="booking-steps-title">
+        <div class="container booking-steps-container">
+            <div class="booking-steps-head">
+                <h2 id="booking-steps-title">Đặt phòng chỉ với 3 bước đơn giản</h2>
+                <p>Tìm phòng phù hợp tại Hà Nội, gửi yêu cầu thuê và theo dõi xác nhận ngay trên hệ thống.</p>
+            </div>
+
+            <div class="booking-steps-flow">
+                <article class="booking-step-card">
+                    <span class="booking-step-number">1</span>
+                    <div class="booking-step-icon">
+                        <img src="assets/img/compass.png" alt="" aria-hidden="true">
+                    </div>
+                    <div>
+                        <h3>Tìm và chọn phòng</h3>
+                        <p>Lọc phòng theo quận, giá thuê, diện tích, tiện ích và xem chi tiết trước khi quyết định.</p>
+                    </div>
+                </article>
+
+                <div class="booking-step-arrow" aria-hidden="true">
+                    <span></span>
+                    <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+                </div>
+
+                <article class="booking-step-card">
+                    <span class="booking-step-number">2</span>
+                    <div class="booking-step-icon">
+                        <img src="assets/img/file.png" alt="" aria-hidden="true">
+                    </div>
+                    <div>
+                        <h3>Hoàn tất yêu cầu thuê</h3>
+                        <p>Điền thông tin cá nhân, xem lại phiếu yêu cầu và gửi cho chủ trọ xác nhận.</p>
+                    </div>
+                </article>
+
+                <div class="booking-step-arrow" aria-hidden="true">
+                    <span></span>
+                    <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+                </div>
+
+                <article class="booking-step-card">
+                    <span class="booking-step-number">3</span>
+                    <div class="booking-step-icon">
+                        <img src="assets/img/house.png" alt="" aria-hidden="true">
+                    </div>
+                    <div>
+                        <h3>Đặt thuê thành công</h3>
+                        <p>Nhận thông báo khi chủ trọ phản hồi, theo dõi lịch xem phòng và trạng thái thuê trong tài khoản.</p>
+                    </div>
+                </article>
             </div>
         </div>
     </section>

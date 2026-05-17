@@ -6,7 +6,7 @@
     const landlordsBody = document.querySelector("#landlords tbody");
     const pendingRoomsBody = document.querySelector("#pending-rooms tbody");
     const reportsList = document.querySelector("#reports .compact-list");
-    const reportsNavLink = document.querySelector('.side-nav a[href="#reports"]');
+    const reportsNavLink = document.querySelector('.side-nav a[href="admin-reports.html"], .side-nav a[href="#reports"]');
     const systemStatsList = document.querySelector("#system-statistics .compact-list");
     const systemDetailPanel = document.querySelector("#system-detail");
     const systemDetailTitle = document.querySelector("[data-system-detail-title]");
@@ -17,7 +17,7 @@
     let reportsCache = [];
     let activeSystemView = "";
 
-    if (!statisticsGrid || !auth?.token?.()) {
+    if (!auth?.token?.()) {
         return;
     }
 
@@ -75,6 +75,9 @@
     }
 
     function renderStatistics(statistics) {
+        if (!statisticsGrid) {
+            return;
+        }
         if (!statistics) {
             statisticsGrid.innerHTML = `<div class="empty-state">Không tải được thống kê hệ thống.</div>`;
             return;
@@ -171,10 +174,10 @@
     }
 
     function renderReports(reports) {
+        updateReportsMenuIndicator(reports || []);
         if (!reportsList) {
             return;
         }
-        updateReportsMenuIndicator(reports);
         if (!reports.length) {
             reportsList.innerHTML = `<div class="empty-state">Chưa có báo cáo vi phạm.</div>`;
             return;

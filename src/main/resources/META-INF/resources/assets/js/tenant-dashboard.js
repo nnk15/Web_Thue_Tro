@@ -238,9 +238,61 @@
             .split(/[,\n]/)
             .map((item) => item.trim())
             .filter(Boolean)
+            .filter((item) => !isDeprecatedAmenity(item))
             .slice(0, 8)
-            .map((item) => `<span>${escapeHtml(item)}</span>`)
+            .map((item) => amenityChip(item))
             .join("");
+    }
+
+    function amenityChip(item) {
+        const iconPath = amenityIcon(item);
+        const iconHtml = iconPath ? `<img class="amenity-icon" src="${iconPath}" alt="" aria-hidden="true">` : "";
+        return `<span>${iconHtml}${escapeHtml(item)}</span>`;
+    }
+
+    function amenityIcon(item) {
+        const normalized = normalizeAmenity(item);
+        const mapping = [
+            { keys: ["wifi", "wi fi", "internet"], file: "wi-fi.png" },
+            { keys: ["camera", "cam"], file: "security-camera.png" },
+            { keys: ["thang may"], file: "elevator.png" },
+            { keys: ["cho de xe", "giu xe", "de xe", "bai xe", "xe dap"], file: "bicycle.png" },
+            { keys: ["tu lanh"], file: "fridge.png" },
+            { keys: ["may lanh", "dieu hoa"], file: "air-conditioner.png" },
+            { keys: ["may say", "say quan ao"], file: "tumble-dry.png" },
+            { keys: ["may giat", "do gia dung"], file: "appliance.png" },
+            { keys: ["khoa van tay", "khoa cua"], file: "lock.png" },
+            { keys: ["an ninh", "bao ve"], file: "security.png" },
+            { keys: ["ban cong"], file: "balcony.png" },
+            { keys: ["gio giac"], file: "clock.png" },
+            { keys: ["giuong", "phong ngu"], file: "single-bed.png" },
+            { keys: ["tu quan ao"], file: "wardrobe.png" },
+            { keys: ["ban hoc", "ban lam viec"], file: "desk-chair.png" },
+            { keys: ["bep rieng", "nau an", "bep"], file: "kitchen.png" },
+            { keys: ["nong lanh", "binh nong lanh", "nuoc nong"], file: "water-boiler.png" },
+            { keys: ["ve sinh", "nha tam", "phong tam"], file: "bath.png" }
+        ];
+        const match = mapping.find((itemMap) => itemMap.keys.some((key) => normalized.includes(key)));
+        return match ? `assets/img/${match.file}` : "";
+    }
+
+    function normalizeAmenity(value) {
+        return String(value || "")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/đ/g, "d")
+                .replace(/Đ/g, "d")
+                .toLowerCase();
+    }
+
+    function isDeprecatedAmenity(item) {
+        const normalized = normalizeAmenity(item);
+        return [
+            "cho de xe",
+            "may giat chung",
+            "internet toc do cao",
+            "gio giac tu do"
+        ].includes(normalized);
     }
 
     function renderNotifications(notifications) {

@@ -1,10 +1,11 @@
 (() => {
     const auth = window.NhaTroAuth;
     const fallbackImage = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=80";
+    const LANDLORD_ROOM_PAGE_SIZE = 10;
 
     const statsGrid = document.querySelector("#stats");
     const roomsBody = document.querySelector("[data-rooms-body], #rooms tbody");
-    const roomListSummary = document.querySelector("#room-list-summary");
+    const roomPagination = document.querySelector("[data-landlord-room-pagination]");
     const requestsBody = document.querySelector("#rental-requests tbody");
     const appointmentsBody = document.querySelector("#appointments tbody");
     const notificationsList = document.querySelector("#notifications .compact-list");
@@ -12,8 +13,17 @@
     const resetRoomFormButton = document.querySelector("[data-reset-room-form]");
     const roomFormTitle = document.querySelector("[data-room-form-title]");
     const roomSubmitButton = document.querySelector("[data-room-submit]");
+    const deprecatedAmenities = new Set([
+        "full nội thất",
+        "cửa sổ lớn",
+        "chỗ để xe",
+        "máy giặt chung",
+        "internet tốc độ cao",
+        "giờ giấc tự do"
+    ]);
 
     let roomsCache = [];
+    let landlordRoomPage = 0;
     let pendingEditId = new URLSearchParams(window.location.search).get("edit");
     let notificationReadObserver = null;
     let notificationAutoReadTimer = null;
@@ -90,16 +100,18 @@
         if (!roomsBody) {
             return;
         }
-        if (roomListSummary) {
-            const visible = rooms.filter((room) => room.status !== "HIDDEN").length;
-            const pending = rooms.filter((room) => room.approvalStatus === "PENDING").length;
-            roomListSummary.textContent = `${rooms.length} phòng trong database, ${visible} phòng không bị ẩn, ${pending} tin đang chờ duyệt.`;
-        }
         if (!rooms.length) {
             roomsBody.innerHTML = emptyRow(7, "Bạn chưa đăng phòng trọ nào.");
+            renderLandlordRoomPagination(0);
             return;
         }
-        roomsBody.innerHTML = rooms.map((room) => {
+
+        const pageCount = Math.max(1, Math.ceil(rooms.length / LANDLORD_ROOM_PAGE_SIZE));
+        landlordRoomPage = Math.min(Math.max(landlordRoomPage, 0), pageCount - 1);
+        const start = landlordRoomPage * LANDLORD_ROOM_PAGE_SIZE;
+        const pageRooms = rooms.slice(start, start + LANDLORD_ROOM_PAGE_SIZE);
+
+        roomsBody.innerHTML = pageRooms.map((room) => {
             const image = room.imageUrls?.[0] || fallbackImage;
             return `
                 <tr>
@@ -122,6 +134,31 @@
                 </tr>
             `;
         }).join("");
+        renderLandlordRoomPagination(rooms.length);
+    }
+
+    function renderLandlordRoomPagination(total) {
+        if (!roomPagination) {
+            return;
+        }
+
+        const pageCount = Math.ceil(total / LANDLORD_ROOM_PAGE_SIZE);
+        if (pageCount <= 1) {
+            roomPagination.innerHTML = "";
+            return;
+        }
+
+        const pages = Array.from({ length: pageCount }, (_, index) => `
+            <button class="${index === landlordRoomPage ? "active" : ""}" type="button" data-landlord-room-page="${index}" aria-label="Trang ${index + 1}">
+                ${index + 1}
+            </button>
+        `).join("");
+
+        roomPagination.innerHTML = `
+            <button type="button" data-landlord-room-page="${landlordRoomPage - 1}" ${landlordRoomPage === 0 ? "disabled" : ""}>Trước</button>
+            ${pages}
+            <button type="button" data-landlord-room-page="${landlordRoomPage + 1}" ${landlordRoomPage >= pageCount - 1 ? "disabled" : ""}>Sau</button>
+        `;
     }
 
     function renderRequests(requests) {
@@ -294,7 +331,7 @@
             amenities: selectedAmenities().join(", "),
             rules: value("rules"),
             furnitureType: value("furnitureType"),
-            status: value("status") || "AVAILABLE",
+            status: null,
             latitude: null,
             longitude: null,
             imageUrls: [...splitList(value("imageUrls")), ...uploadedImages],
@@ -338,7 +375,6 @@
         setValue("price", room.price);
         setValue("deposit", room.deposit);
         setValue("area", room.area);
-        setValue("status", room.status || "AVAILABLE");
         setValue("furnitureType", room.furnitureType || "Đầy đủ");
         setValue("address", room.address);
         setValue("imageUrls", (room.imageUrls || []).join(", "));
@@ -389,26 +425,55 @@
         if (!roomForm) {
             return [];
         }
-        return [...roomForm.querySelectorAll('input[name="amenities"]:checked')]
+        const selected = [...roomForm.querySelectorAll('input[name="amenities"]:checked')]
             .map((input) => input.value)
             .filter(Boolean);
+        const customEnabled = field("customAmenityEnabled")?.checked;
+        const custom = customEnabled ? splitList(value("customAmenities")) : [];
+
+        return [...new Set([...selected, ...custom]
+            .map((item) => item.trim())
+            .filter((item) => item && !isDeprecatedAmenity(item)))];
     }
 
     function setAmenities(amenities) {
         if (!roomForm) {
             return;
         }
-        const selected = splitList(amenities).map((item) => item.toLowerCase());
+        const items = splitList(amenities).filter((item) => !isDeprecatedAmenity(item));
+        const selected = items.map((item) => item.toLowerCase());
+        const knownValues = new Set([...roomForm.querySelectorAll('input[name="amenities"]')]
+                .map((input) => input.value.toLowerCase()));
+
         roomForm.querySelectorAll('input[name="amenities"]').forEach((input) => {
             input.checked = selected.includes(input.value.toLowerCase());
         });
+
+        const customItems = items.filter((item) => !knownValues.has(item.toLowerCase()));
+        const customToggle = field("customAmenityEnabled");
+        if (customToggle) {
+            customToggle.checked = customItems.length > 0;
+        }
+        setValue("customAmenities", customItems.join(", "));
+    }
+
+    function isDeprecatedAmenity(value) {
+        return deprecatedAmenities.has(String(value || "").trim().toLowerCase());
     }
 
     function bindActions() {
         document.addEventListener("click", async (event) => {
             const target = event.target;
+            const pageButton = target.closest("[data-landlord-room-page]");
             const editButton = target.closest("[data-edit-room]");
             const deleteButton = target.closest("[data-delete-room]");
+
+            if (pageButton) {
+                landlordRoomPage = Number(pageButton.dataset.landlordRoomPage || 0);
+                renderRooms(roomsCache);
+                document.querySelector("#rooms")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+            }
 
             if (editButton) {
                 editRoom(editButton.dataset.editRoom);

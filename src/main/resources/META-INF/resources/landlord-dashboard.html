@@ -59,14 +59,6 @@
                     <input id="area" name="area" type="number" min="1" step="0.1" placeholder="28" required>
                 </div>
                 <div class="form-field">
-                    <label for="roomStatus">Trạng thái phòng</label>
-                    <select id="roomStatus" name="status" required>
-                        <option value="AVAILABLE">Còn trống</option>
-                        <option value="RENTED">Đã thuê</option>
-                        <option value="HIDDEN">Đang ẩn</option>
-                    </select>
-                </div>
-                <div class="form-field">
                     <label for="furnitureType">Nội thất</label>
                     <select id="furnitureType" name="furnitureType">
                         <option value="Đầy đủ">Đầy đủ</option>
@@ -101,19 +93,33 @@
                 <div class="form-field full">
                     <label>Tiện ích</label>
                     <div class="checkbox-grid" data-amenity-group>
-                        <label><input type="checkbox" name="amenities" value="Máy lạnh"> Máy lạnh</label>
-                        <label><input type="checkbox" name="amenities" value="Tủ lạnh"> Tủ lạnh</label>
-                        <label><input type="checkbox" name="amenities" value="Máy giặt"> Máy giặt</label>
-                        <label><input type="checkbox" name="amenities" value="Chỗ để xe"> Chỗ để xe</label>
-                        <label><input type="checkbox" name="amenities" value="Camera"> Camera</label>
-                        <label><input type="checkbox" name="amenities" value="Thang máy"> Thang máy</label>
-                        <label><input type="checkbox" name="amenities" value="Wifi"> Wifi</label>
-                        <label><input type="checkbox" name="amenities" value="An ninh 24/7"> An ninh 24/7</label>
+                        <label><input type="checkbox" name="amenities" value="Máy lạnh"> <img class="amenity-checkbox-icon" src="assets/img/air-conditioner.png" alt="" aria-hidden="true"> Máy lạnh</label>
+                        <label><input type="checkbox" name="amenities" value="Tủ lạnh"> <img class="amenity-checkbox-icon" src="assets/img/fridge.png" alt="" aria-hidden="true"> Tủ lạnh</label>
+                        <label><input type="checkbox" name="amenities" value="Máy giặt"> <img class="amenity-checkbox-icon" src="assets/img/appliance.png" alt="" aria-hidden="true"> Máy giặt</label>
+                        <label><input type="checkbox" name="amenities" value="Máy sấy"> <img class="amenity-checkbox-icon" src="assets/img/tumble-dry.png" alt="" aria-hidden="true"> Máy sấy</label>
+                        <label><input type="checkbox" name="amenities" value="Giữ xe"> <img class="amenity-checkbox-icon" src="assets/img/bicycle.png" alt="" aria-hidden="true"> Giữ xe</label>
+                        <label><input type="checkbox" name="amenities" value="Camera"> <img class="amenity-checkbox-icon" src="assets/img/security-camera.png" alt="" aria-hidden="true"> Camera</label>
+                        <label><input type="checkbox" name="amenities" value="Thang máy"> <img class="amenity-checkbox-icon" src="assets/img/elevator.png" alt="" aria-hidden="true"> Thang máy</label>
+                        <label><input type="checkbox" name="amenities" value="Wifi"> <img class="amenity-checkbox-icon" src="assets/img/wi-fi.png" alt="" aria-hidden="true"> Wifi</label>
+                        <label><input type="checkbox" name="amenities" value="An ninh 24/7"> <img class="amenity-checkbox-icon" src="assets/img/security.png" alt="" aria-hidden="true"> An ninh 24/7</label>
+                        <label><input type="checkbox" name="amenities" value="Bảo vệ"> <img class="amenity-checkbox-icon" src="assets/img/security.png" alt="" aria-hidden="true"> Bảo vệ</label>
+                        <label><input type="checkbox" name="amenities" value="Khóa vân tay"> <img class="amenity-checkbox-icon" src="assets/img/lock.png" alt="" aria-hidden="true"> Khóa vân tay</label>
+                        <label><input type="checkbox" name="amenities" value="Giường"> <img class="amenity-checkbox-icon" src="assets/img/single-bed.png" alt="" aria-hidden="true"> Giường</label>
+                        <label><input type="checkbox" name="amenities" value="Tủ quần áo"> <img class="amenity-checkbox-icon" src="assets/img/wardrobe.png" alt="" aria-hidden="true"> Tủ quần áo</label>
+                        <label><input type="checkbox" name="amenities" value="Bàn học"> <img class="amenity-checkbox-icon" src="assets/img/desk-chair.png" alt="" aria-hidden="true"> Bàn học</label>
+                        <label><input type="checkbox" name="amenities" value="Bếp riêng"> <img class="amenity-checkbox-icon" src="assets/img/kitchen.png" alt="" aria-hidden="true"> Bếp riêng</label>
+                        <label><input type="checkbox" name="amenities" value="Nóng lạnh"> <img class="amenity-checkbox-icon" src="assets/img/water-boiler.png" alt="" aria-hidden="true"> Nóng lạnh</label>
+                        <label><input type="checkbox" name="amenities" value="Ban công"> <img class="amenity-checkbox-icon" src="assets/img/balcony.png" alt="" aria-hidden="true"> Ban công</label>
+                        <label><input type="checkbox" name="amenities" value="Vệ sinh khép kín"> <img class="amenity-checkbox-icon" src="assets/img/bath.png" alt="" aria-hidden="true"> Vệ sinh khép kín</label>
+                    </div>
+                    <div class="amenity-custom-row">
+                        <label><input type="checkbox" name="customAmenityEnabled"> Thêm</label>
+                        <input name="customAmenities" placeholder="Nhập tiện ích khác, cách nhau bằng dấu phẩy">
                     </div>
                 </div>
                 <div class="form-field full">
                     <label for="rules">Nội quy</label>
-                    <textarea id="rules" name="rules" placeholder="Không hút thuốc, không nuôi thú cưng, giờ giấc tự do..."></textarea>
+                    <textarea id="rules" name="rules" placeholder="Không hút thuốc, không nuôi thú cưng, giữ vệ sinh khu chung..."></textarea>
                 </div>
                 <div class="form-field full">
                     <button class="btn btn-primary" type="submit" data-room-submit>Thêm phòng</button>
@@ -125,7 +131,6 @@
             <div class="panel-head">
                 <div>
                     <h2>Danh sách phòng</h2>
-                    <p class="panel-note" id="room-list-summary">Đang tải dữ liệu phòng...</p>
                 </div>
             </div>
             <div class="table-wrap">
@@ -146,6 +151,7 @@
                     </tbody>
                 </table>
             </div>
+            <div class="pagination-bar" data-landlord-room-pagination aria-label="Phân trang danh sách phòng"></div>
         </section>
     </section>
 </main>
